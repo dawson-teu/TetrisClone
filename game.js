@@ -4,7 +4,7 @@ const numCol = 10;
 const blockHeight = 40;
 const blockWidth = 40;
 
-let piece = new Piece(0, 40, 40);
+let piece = new Piece(PieceName.T, 40, 40);
 
 function setup() {
     createCanvas(blockHeight * numCol, blockWidth * numRow);

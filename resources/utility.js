@@ -1,3 +1,13 @@
+const PieceName = {
+    'I': 1,
+    'J': 2,
+    'L': 3,
+    'O': 4,
+    'S': 5,
+    'T': 6,
+    'Z': 7,
+}
+
 function transpose(array) {
     let tranposedArr = [];
     for (let x = 0; x < array.length; x++) {
