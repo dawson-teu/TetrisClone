@@ -8,6 +8,26 @@ const PieceName = {
     'Z': 7,
 }
 
+const PieceId = {
+    '1': 'I',
+    '2': 'J',
+    '3': 'L',
+    '4': 'O',
+    '5': 'S',
+    '6': 'T',
+    '7': 'Z',
+}
+
+const PieceColour = {
+    'I': [1, 240, 241],
+    'J': [1, 1, 240],
+    'L': [239, 160, 0],
+    'O': [240, 240, 1],
+    'S': [0, 240, 0],
+    'T': [160, 0, 241],
+    'Z': [240, 1, 0],
+}
+
 function transpose(array) {
     let tranposedArr = [];
     for (let x = 0; x < array.length; x++) {

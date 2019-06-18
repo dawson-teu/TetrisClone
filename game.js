@@ -4,10 +4,13 @@ const numCol = 10;
 const blockHeight = 40;
 const blockWidth = 40;
 
+const boardWidth = numCol * blockWidth
+const boardHeight = numRow * blockHeight
+
 let piece = new Piece(PieceName.T, 40, 40);
 
 function setup() {
-    createCanvas(blockHeight * numCol, blockWidth * numRow);
+    createCanvas(boardWidth, boardHeight);
 }
 
 function draw() {

@@ -32,7 +32,7 @@ class Piece {
         for (let x = 0; x < this.piece.shape.length; x++) {
             for (let y = 0; y < this.piece.shape[0].length; y++) {
                 if (this.piece.shape[x][y]) {
-                    fill(255, 0, 0);
+                    fill(...PieceColour[PieceId[this.type]])
                     rect((this.piece.x + x) * this.blockWidth, 
                          (this.piece.y + y) * this.blockHeight, this.blockWidth, this.blockHeight);
                 }
