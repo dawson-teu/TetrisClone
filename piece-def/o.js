@@ -1,11 +1,9 @@
-class O {
+class O extends PieceTemplate{
     constructor(x, y) {
-        this.shape = [
+        let shape = [
         [1, 1],
         [1, 1]];
-        this.shape = transpose(this.shape);
-        this.x = x;
-        this.y = y;
+        super(x, y, shape)
     }
 
     rotate() {
@@ -18,18 +16,5 @@ class O {
             }
         }
         this.shape = newShape;
-    }
-
-    getShape() {
-        return this.shape
-    }
-
-    getPos() {
-        return {x: this.x, y: this.y}
-    }
-
-    setPos(x, y) {
-        this.x = x
-        this.y = y
     }
 }
