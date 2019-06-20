@@ -21,4 +21,17 @@ class I {
         }
         this.shape = newShape;
     }
+    
+    getShape() {
+        return this.shape
+    }
+
+    getPos() {
+        return {x: this.x, y: this.y}
+    }
+
+    setPos(x, y) {
+        this.x = x
+        this.y = y
+    }
 }

@@ -1,27 +1,23 @@
-const numRow = 20;
-const numCol = 10; 
+const gridWidth = 10; 
+const gridHeight = 20;
 
-const blockHeight = 40;
 const blockWidth = 40;
+const blockHeight = 40;
 
-const boardWidth = numCol * blockWidth
-const boardHeight = numRow * blockHeight
+const autoDropSpeed = 1000 // this speed is in units of msec/row (the amount of milliseconds per every row the piece moves down)
 
-let piece = new Piece(PieceName.T, 40, 40);
+let board = new Board(gridWidth, gridHeight)
+let piece = new Piece(PieceName.I, gridWidth, gridWidth);
 
 function setup() {
+    const boardWidth = gridWidth * blockWidth
+    const boardHeight = gridHeight * blockHeight
     createCanvas(boardWidth, boardHeight);
 }
 
 function draw() {
     background(0);
-    for (let i = 1; i < numCol; i++) {
-        stroke(40);
-        line(i * blockHeight, 0, i * blockHeight, height);
-    }
-    for (let i = 1; i < numRow; i++) {
-        stroke(40);
-        line(0, i * blockWidth, width, i * blockWidth);
-    }
-    piece.draw();
+    piece.draw(blockWidth, blockHeight);
+    board.draw(blockWidth, blockHeight);
 }
+

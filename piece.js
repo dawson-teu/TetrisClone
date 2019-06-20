@@ -1,8 +1,8 @@
 class Piece {
-    constructor(type, blockWidth, blockHeight) {
+    constructor(type, gridWidth, gridHeight) {
         this.type = type;
-        this.blockWidth = blockWidth;
-        this.blockHeight = blockHeight;
+        this.width = gridWidth;
+        this.height = gridHeight;
         switch (type) {
             case PieceName.I:
                 this.piece = new I(0, 0);
@@ -28,28 +28,44 @@ class Piece {
         }
     }
 
-    draw() {
-        for (let x = 0; x < this.piece.shape.length; x++) {
-            for (let y = 0; y < this.piece.shape[0].length; y++) {
-                if (this.piece.shape[x][y]) {
+    draw(blockWidth, blockHeight) {
+        for (let x = 0; x < this.piece.getShape().length; x++) {
+            for (let y = 0; y < this.piece.getShape()[0].length; y++) {
+                if (this.piece.getShape()[x][y]) {
                     fill(...PieceColour[PieceId[this.type]])
-                    rect((this.piece.x + x) * this.blockWidth, 
-                         (this.piece.y + y) * this.blockHeight, this.blockWidth, this.blockHeight);
+                    rect((this.piece.getPos().x + x) * blockWidth, 
+                         (this.piece.getPos().y + y) * blockHeight, blockWidth, blockHeight);
                 }
             }
         }
     }
 
     setPos(x, y) {
-        this.piece.x = x;
-        this.piece.y = y;
+        this.piece.setPos(x, y)
     }
 
-    getPos() {
-        return {x: this.piece.x, y: this.piece.y}
+    drop() {
+        this.piece.setPos(0, this.piece.getPos().y + 1);
+    }
+
+    getX() {
+        return {x: this.piece.getPos().x, y: this.piece.getPos().y}
     }
 
     rotate() {
         this.piece.rotate();
+    }
+
+    intersects(board) {
+        for (let i = 0; i < this.piece.shape.length; i++) {
+            for (let j = 0; j < this.piece.shape[0].length; j++) {
+                let x = this.piece.getPos().x + i
+                let y = this.piece.getPos().y + j
+                if (board.getData()[x][y+1] > 0 && this.piece.getShape()[i][j] == 1) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 }
