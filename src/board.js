@@ -1,10 +1,10 @@
-import * as utility from './resources/utility.js';
+import { new2Darray } from './resources/utility.js';
 
 export default class Board {
     constructor(gridWidth, gridHeight) {
         this.width = gridWidth;
         this.height = gridHeight;
-        this.data = utility.new2Darray(gridHeight, gridWidth);
+        this.data = new2Darray(gridHeight, gridWidth);
     }
 
     draw(sketch, blockWidth, blockHeight) {

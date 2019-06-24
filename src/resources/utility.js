@@ -29,11 +29,12 @@ export const PieceColour = {
 };
 
 export const PieceState = {
-    AUTO: 1,
-    MANUAL: 2,
-    STOP: 3,
-    ROTATE: 4,
-    MOVE: 5,
+    NONE: 0,
+    AUTO_DROP: 1,
+    MANUAL_DROP: 2,
+    ROTATING: 3,
+    MOVING_LEFT: 4,
+    MOVING_RIGHT: 5,
 };
 
 export const Direction = {

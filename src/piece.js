@@ -1,4 +1,6 @@
-import * as utility from './resources/utility.js';
+import {
+    PieceName, PieceColour, PieceId, Direction,
+} from './resources/utility.js';
 import I from './piece-def/i.js';
 import J from './piece-def/j.js';
 import L from './piece-def/l.js';
@@ -13,25 +15,25 @@ export default class Piece {
         this.width = gridWidth;
         this.height = gridHeight;
         switch (type) {
-        case utility.PieceName.I:
+        case PieceName.I:
             this.piece = new I(0, 0);
             break;
-        case utility.PieceName.J:
+        case PieceName.J:
             this.piece = new J(0, 0);
             break;
-        case utility.PieceName.L:
+        case PieceName.L:
             this.piece = new L(0, 0);
             break;
-        case utility.PieceName.O:
+        case PieceName.O:
             this.piece = new O(0, 0);
             break;
-        case utility.PieceName.S:
+        case PieceName.S:
             this.piece = new S(0, 0);
             break;
-        case utility.PieceName.T:
+        case PieceName.T:
             this.piece = new T(0, 0);
             break;
-        case utility.PieceName.Z:
+        case PieceName.Z:
             this.piece = new Z(0, 0);
             break;
         default:
@@ -43,15 +45,24 @@ export default class Piece {
         for (let x = 0; x < this.piece.getShape().length; x += 1) {
             for (let y = 0; y < this.piece.getShape()[0].length; y += 1) {
                 if (this.piece.getShape()[x][y]) {
-                    sketch.fill(...utility.PieceColour[utility.PieceId[this.type]]);
+                    sketch.fill(...PieceColour[PieceId[this.type]]);
                     sketch.rect(
-                        (this.piece.getPos().x + x) * blockWidth,
-                        (this.piece.getPos().y + y) * blockHeight,
+                        (this.piece.getX() + x) * blockWidth,
+                        (this.piece.getY() + y) * blockHeight,
                         blockWidth,
                         blockHeight,
                     );
                 }
             }
+        }
+    }
+
+    checkEdges() {
+        if (this.rightBlock() + this.piece.getX() >= this.width) {
+            this.piece.setX(this.width - this.rightBlock() - 1);
+        }
+        if (this.leftBlock() + this.piece.getX() < 0) {
+            this.piece.setX(-this.leftBlock());
         }
     }
 
@@ -64,11 +75,15 @@ export default class Piece {
     }
 
     drop() {
-        this.piece.setY(this.piece.getPos().y + 1);
+        this.piece.setY(this.piece.getY() + 1);
     }
 
-    getPos() {
-        return { x: this.piece.getPos().x, y: this.piece.getPos().y };
+    getX() {
+        return this.piece.getX();
+    }
+
+    getY() {
+        return this.piece.getY();
     }
 
     rotate() {
@@ -76,23 +91,67 @@ export default class Piece {
     }
 
     move(direction) {
-        if (direction === utility.Direction.LEFT) {
-            this.piece.setX(this.piece.getPos().x - 1);
-        } else if (direction === utility.Direction.RIGHT) {
-            this.piece.setX(this.piece.getPos().x + 1);
+        if (direction === Direction.LEFT) {
+            this.piece.setX(this.piece.getX() - 1);
+        } else if (direction === Direction.RIGHT) {
+            this.piece.setX(this.piece.getX() + 1);
         }
     }
 
+    lowestBlock() {
+        let maxBlockY = -Infinity;
+        for (let i = 0; i < this.piece.getShape().length; i += 1) {
+            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
+                if (this.piece.getShape()[j][i] > 0) {
+                    maxBlockY = Math.max(maxBlockY, i);
+                }
+            }
+        }
+        return maxBlockY;
+    }
+
+    rightBlock() {
+        let maxBlockX = -Infinity;
+        for (let i = 0; i < this.piece.getShape().length; i += 1) {
+            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
+                if (this.piece.getShape()[j][i] > 0) {
+                    maxBlockX = Math.max(maxBlockX, j);
+                }
+            }
+        }
+        return maxBlockX;
+    }
+
+    leftBlock() {
+        let minBlockX = Infinity;
+        for (let i = 0; i < this.piece.getShape().length; i += 1) {
+            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
+                if (this.piece.getShape()[j][i] > 0) {
+                    minBlockX = Math.min(minBlockX, j);
+                }
+            }
+        }
+        return minBlockX;
+    }
+
     intersects(board) {
-        for (let i = 0; i < this.piece.shape.length; i += 1) {
-            for (let j = 0; j < this.piece.shape[0].length; j += 1) {
-                const x = this.piece.getPos().x + i;
-                const y = this.piece.getPos().y + j;
+        for (let i = 0; i < this.piece.getShape().length; i += 1) {
+            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
+                const x = this.piece.getX() + i;
+                const y = this.piece.getY() + j;
                 if (board.getData(x, y + 1) > 0 && this.piece.getShape()[i][j] === 1) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    // This is for development use. Do Not Ship unless in use by production code
+    reset() {
+        this.piece = new T(0, 0);
+        this.type = PieceName.T;
+        this.piece.setX(0);
+        this.piece.setY(0);
     }
 }

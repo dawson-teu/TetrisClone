@@ -1,5 +1,5 @@
 import PieceTemplate from './piece-template.js';
-import * as utility from '../resources/utility.js';
+import { new2Darray } from '../resources/utility.js';
 
 export default class O extends PieceTemplate {
     constructor(x, y) {
@@ -8,7 +8,7 @@ export default class O extends PieceTemplate {
     }
 
     rotate() {
-        const newShape = utility.new2Darray(2, 2);
+        const newShape = new2Darray(2, 2);
         for (let x = 0; x < this.shape.length; x += 1) {
             for (let y = 0; y < this.shape[0].length; y += 1) {
                 const newX = 1 - y;

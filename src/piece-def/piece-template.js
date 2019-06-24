@@ -1,15 +1,15 @@
-import * as utility from '../resources/utility.js';
+import { transpose, new2Darray } from '../resources/utility.js';
 
 export default class PieceTemplate {
     constructor(x, y, shape) {
         this.shape = shape;
-        this.shape = utility.transpose(this.shape);
+        this.shape = transpose(this.shape);
         this.x = x;
         this.y = y;
     }
 
     rotate() {
-        const newShape = utility.new2Darray(3, 3);
+        const newShape = new2Darray(3, 3);
         for (let x = 0; x < this.shape.length; x += 1) {
             for (let y = 0; y < this.shape[0].length; y += 1) {
                 const newX = 2 - y;
@@ -24,8 +24,12 @@ export default class PieceTemplate {
         return this.shape;
     }
 
-    getPos() {
-        return { x: this.x, y: this.y };
+    getX() {
+        return this.x;
+    }
+
+    getY() {
+        return this.y;
     }
 
     setX(x) {
