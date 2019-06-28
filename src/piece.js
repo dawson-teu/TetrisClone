@@ -98,6 +98,10 @@ export default class Piece {
         }
     }
 
+    getShape() {
+        return this.piece.getShape();
+    }
+
     lowestBlock() {
         let maxBlockY = -Infinity;
         for (let i = 0; i < this.piece.getShape().length; i += 1) {

@@ -32,9 +32,10 @@ export const PieceState = {
     NONE: 0,
     AUTO_DROP: 1,
     MANUAL_DROP: 2,
-    ROTATING: 3,
-    MOVING_LEFT: 4,
-    MOVING_RIGHT: 5,
+    FULL_DROP: 3,
+    ROTATING: 4,
+    MOVING_LEFT: 5,
+    MOVING_RIGHT: 6,
 };
 
 export const Direction = {
@@ -64,4 +65,8 @@ export function new2Darray(row, col, value = 0) {
         array.push(newRow);
     }
     return array;
+}
+
+export function chooseRandomPiece() {
+    return Math.floor(Math.random() * Object.keys(PieceName).length) + 1;
 }
