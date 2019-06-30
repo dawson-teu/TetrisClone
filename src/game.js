@@ -7,26 +7,32 @@
 
     Bugs
         - Fix Keyboard Event handling
-        - Fix piece collision with board
+        - Fix pieces stacking on each other at the top of the board
 
     Game Features
-    - Add lock delay?
-    - Spawn pieces in the middle
-    - Fix random piece selection
+        - Add game end on topping out
+        - Add lock delay?
+        - Spawn pieces in the middle of the board
+        - Fix random piece selection
+        - Add ghost piece
 
+    UI Features
+        - Add UI elements around sketch with React
+        - These should display score/level, next 3 pieces,
+        held piece, piece statistics, instructions and player profile information
+        - The website should control the behaviour of the game
+        - Add pause menu (in another sketch) that activates on defocus
 
-    Think about?
-    - Adding lazy loading for p5 library (on game start)
-        - https://webpack.js.org/guides/code-splitting/
-        - https://webpack.js.org/guides/lazy-loading/
-    - Adding a web server to handle requests
-        https://expressjs.com/en/starter/hello-world.html
-    - The KeyboardEvent scope
-    - How to put this code inside a website (React)
-    - What game info to display on the website
-    - Consider migrating code to TypeScript?
-        - See links for more info
-    - Databases with Node.js and mongoose (for user data)
+    Think about? (after implementing features)
+        - Adding lazy loading for p5 library (on game start)
+            - https://webpack.js.org/guides/code-splitting/
+            - https://webpack.js.org/guides/lazy-loading/
+        - Adding a web server to handle requests
+            https://expressjs.com/en/starter/hello-world.html
+        - Consider migrating code to TypeScript?
+            - See links for more info
+        - Databases with Node.js and mongoose (for user data)
+            - https://www.youtube.com/watch?v=pWbMrx5rVBE
 */
 
 import p5 from './resources/p5.min.js';
@@ -63,28 +69,7 @@ const game = new p5((sketch) => {
 
     // eslint-disable-next-line no-param-reassign
     sketch.draw = () => {
-        if (board.piecePastTopRow()) {
-            sketch.noLoop();
-            console.log('Game Over');
-            return;
-        }
-
-        if (piece.intersects(board)) {
-            pieceState.stopped = true;
-            while (piece.intersects(board)) {
-                piece.setY(piece.getY() - 1);
-            }
-            piece.drop();
-            board.add(piece);
-
-            piece = new Piece(chooseRandomPiece(), gridWidth, gridHeight);
-            pieceState.drop = PieceState.AUTO_DROP;
-            pieceState.move = PieceState.NONE;
-            pieceState.stopped = false;
-        }
-
         sketch.background(0);
-        piece.checkEdges();
         piece.draw(sketch, blockWidth, blockHeight);
 
         board.update();
@@ -109,6 +94,20 @@ const game = new p5((sketch) => {
         handlers.handleManualDrop.call(context);
         handlers.handleRotate.call(context);
         handlers.handleFullDrop.call(context);
+
+        if (piece.intersects(board)) {
+            pieceState.stopped = true;
+            while (piece.intersects(board)) {
+                piece.setY(piece.getY() - 1);
+            }
+            piece.drop();
+            board.add(piece);
+
+            piece = new Piece(chooseRandomPiece(), gridWidth, gridHeight);
+            pieceState.drop = PieceState.AUTO_DROP;
+            pieceState.move = PieceState.NONE;
+            pieceState.stopped = false;
+        }
     };
 }, 'sketch');
 

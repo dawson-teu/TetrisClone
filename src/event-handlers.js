@@ -6,7 +6,7 @@ export function handleMoveRight() {
     }
     if (this.tick % Math.floor(this.horizontalMoveSpeed * (60 / 1000)) === 0) {
         if (this.pieceState.move === PieceState.MOVING_RIGHT) {
-            this.piece.move(Direction.RIGHT);
+            this.piece.move(Direction.RIGHT, this.board);
         }
     }
 }
@@ -17,7 +17,7 @@ export function handleMoveLeft() {
     }
     if (this.tick % Math.floor(this.horizontalMoveSpeed * (60 / 1000)) === 0) {
         if (this.pieceState.move === PieceState.MOVING_LEFT) {
-            this.piece.move(Direction.LEFT);
+            this.piece.move(Direction.LEFT, this.board);
         }
     }
 }
@@ -49,7 +49,7 @@ export function handleRotate() {
         return;
     }
     if (this.pieceState.move === PieceState.ROTATING) {
-        this.piece.rotate();
+        this.piece.rotate(this.board);
         this.pieceState.move = PieceState.NONE;
     }
 }

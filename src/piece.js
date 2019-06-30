@@ -42,9 +42,9 @@ export default class Piece {
     }
 
     draw(sketch, blockWidth, blockHeight) {
-        for (let x = 0; x < this.piece.getShape().length; x += 1) {
-            for (let y = 0; y < this.piece.getShape()[0].length; y += 1) {
-                if (this.piece.getShape()[x][y]) {
+        for (let y = 0; y < this.piece.getShape().length; y += 1) {
+            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
+                if (this.piece.getShape()[y][x]) {
                     sketch.fill(...PieceColour[PieceId[this.type]]);
                     sketch.rect(
                         (this.piece.getX() + x) * blockWidth,
@@ -57,13 +57,36 @@ export default class Piece {
         }
     }
 
-    checkEdges() {
-        if (this.rightBlock() + this.piece.getX() >= this.width) {
-            this.piece.setX(this.width - this.rightBlock() - 1);
+    willCollide(nextPieceX, nextPieceY, board) {
+        let boardLeft = -Infinity;
+        let boardRight = Infinity;
+
+        for (let y = 0; y < this.piece.getShape().length; y += 1) {
+            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
+                if (this.piece.getShape()[y][x]) {
+                    boardLeft = Math.max(
+                        boardLeft,
+                        board.castRay(nextPieceX + x, nextPieceY + y, Direction.LEFT),
+                    );
+
+                    boardRight = Math.min(
+                        boardRight,
+                        board.castRay(nextPieceX + x, nextPieceY + y, Direction.RIGHT),
+                    );
+                }
+            }
         }
-        if (this.leftBlock() + this.piece.getX() < 0) {
-            this.piece.setX(-this.leftBlock());
+
+        const pieceLeftBlock = this.leftBlock();
+        const pieceRightBlock = this.rightBlock();
+        if (pieceRightBlock + nextPieceX >= boardRight) {
+            return true;
         }
+
+        if (pieceLeftBlock + nextPieceX <= boardLeft) {
+            return true;
+        }
+        return false;
     }
 
     setX(x) {
@@ -86,40 +109,46 @@ export default class Piece {
         return this.piece.getY();
     }
 
-    rotate() {
-        this.piece.rotate();
+    rotate(board) {
+        const tests = [0, 1, -1, 2, -2];
+        for (const value of tests) {
+            const nextX = this.piece.getX() + value;
+            this.piece.rotate();
+            if (this.willCollide(nextX, this.piece.getY(), board)) {
+                for (let j = 0; j < 3; j += 1) {
+                    this.piece.rotate();
+                }
+            } else {
+                this.piece.setX(nextX);
+                return;
+            }
+        }
     }
 
-    move(direction) {
+    move(direction, board) {
+        let nextX;
         if (direction === Direction.LEFT) {
-            this.piece.setX(this.piece.getX() - 1);
-        } else if (direction === Direction.RIGHT) {
-            this.piece.setX(this.piece.getX() + 1);
+            nextX = this.piece.getX() - 1;
         }
+        if (direction === Direction.RIGHT) {
+            nextX = this.piece.getX() + 1;
+        }
+        if (this.willCollide(nextX, this.piece.getY(), board)) {
+            return;
+        }
+        this.piece.setX(nextX);
     }
 
     getShape() {
         return this.piece.getShape();
     }
 
-    lowestBlock() {
-        let maxBlockY = -Infinity;
-        for (let i = 0; i < this.piece.getShape().length; i += 1) {
-            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
-                if (this.piece.getShape()[j][i] > 0) {
-                    maxBlockY = Math.max(maxBlockY, i);
-                }
-            }
-        }
-        return maxBlockY;
-    }
-
     rightBlock() {
         let maxBlockX = -Infinity;
-        for (let i = 0; i < this.piece.getShape().length; i += 1) {
-            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
-                if (this.piece.getShape()[j][i] > 0) {
-                    maxBlockX = Math.max(maxBlockX, j);
+        for (let y = 0; y < this.piece.getShape().length; y += 1) {
+            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
+                if (this.piece.getShape()[y][x] > 0) {
+                    maxBlockX = Math.max(maxBlockX, x);
                 }
             }
         }
@@ -128,10 +157,10 @@ export default class Piece {
 
     leftBlock() {
         let minBlockX = Infinity;
-        for (let i = 0; i < this.piece.getShape().length; i += 1) {
-            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
-                if (this.piece.getShape()[j][i] > 0) {
-                    minBlockX = Math.min(minBlockX, j);
+        for (let y = 0; y < this.piece.getShape().length; y += 1) {
+            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
+                if (this.piece.getShape()[y][x] > 0) {
+                    minBlockX = Math.min(minBlockX, x);
                 }
             }
         }
@@ -139,11 +168,11 @@ export default class Piece {
     }
 
     intersects(board) {
-        for (let i = 0; i < this.piece.getShape().length; i += 1) {
-            for (let j = 0; j < this.piece.getShape()[0].length; j += 1) {
-                const x = this.piece.getX() + i;
-                const y = this.piece.getY() + j;
-                if (board.getData(x, y + 1) > 0 && this.piece.getShape()[i][j] === 1) {
+        for (let y = 0; y < this.piece.getShape().length; y += 1) {
+            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
+                const pieceX = this.piece.getX() + x;
+                const pieceY = this.piece.getY() + y;
+                if (board.getData(pieceX, pieceY + 1) > 0 && this.piece.getShape()[y][x] === 1) {
                     return true;
                 }
             }
