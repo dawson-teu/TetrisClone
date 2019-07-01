@@ -2,12 +2,7 @@
     Refactoring
         - Add comments and jsdoc (https://jsdoc.app/index.html)
         - Rethink variable and function names
-        - Moving handlers into seperate files
         - Tweak values for piece speeds
-
-    Bugs
-        - Fix Keyboard Event handling
-        - Fix pieces stacking on each other at the top of the board
 
     Game Features
         - Add game end on topping out
@@ -50,12 +45,39 @@ const blockHeight = 40;
 // these speeds are in units of msec/block)
 const autoDropSpeed = 500;
 const manualDropSpeed = 100;
-const horizontalMoveSpeed = 75;
+
+const horizontalMoveTime = 75;
+const horizontalBlockingTime = 125;
 
 const board = new Board(gridWidth, gridHeight);
 let piece = new Piece(chooseRandomPiece(), gridWidth, gridWidth);
 
 const pieceState = { drop: PieceState.NONE, move: PieceState.NONE, stopped: false };
+
+function getPieceState(key = 'all') {
+    if (key === 'all') return pieceState;
+    return pieceState[key];
+}
+
+function setPieceState(key, value) {
+    pieceState[key] = value;
+}
+
+const context = {
+    gridWidth,
+    gridHeight,
+    blockHeight,
+    blockWidth,
+    autoDropSpeed,
+    manualDropSpeed,
+    horizontalMoveTime,
+    board,
+    piece,
+    pieceState,
+    getPieceState,
+    setPieceState,
+    horizontalBlockingTime,
+};
 
 /* eslint-disable new-cap */
 const game = new p5((sketch) => {
@@ -64,7 +86,8 @@ const game = new p5((sketch) => {
         const boardWidth = gridWidth * blockWidth;
         const boardHeight = gridHeight * blockHeight;
         sketch.createCanvas(boardWidth, boardHeight);
-        pieceState.drop = PieceState.AUTO_DROP;
+        setPieceState('drop', PieceState.AUTO_DROP);
+        handlers.handleAutoDrop.call(context);
     };
 
     // eslint-disable-next-line no-param-reassign
@@ -74,29 +97,9 @@ const game = new p5((sketch) => {
 
         board.update();
         board.draw(sketch, blockWidth, blockHeight);
-        const context = {
-            gridWidth,
-            gridHeight,
-            blockHeight,
-            blockWidth,
-            autoDropSpeed,
-            manualDropSpeed,
-            horizontalMoveSpeed,
-            board,
-            piece,
-            pieceState,
-            tick: sketch.frameCount,
-        };
-
-        handlers.handleMoveRight.call(context);
-        handlers.handleMoveLeft.call(context);
-        handlers.handleAutoDrop.call(context);
-        handlers.handleManualDrop.call(context);
-        handlers.handleRotate.call(context);
-        handlers.handleFullDrop.call(context);
 
         if (piece.intersects(board)) {
-            pieceState.stopped = true;
+            setPieceState('stopped', true);
             while (piece.intersects(board)) {
                 piece.setY(piece.getY() - 1);
             }
@@ -104,9 +107,10 @@ const game = new p5((sketch) => {
             board.add(piece);
 
             piece = new Piece(chooseRandomPiece(), gridWidth, gridHeight);
-            pieceState.drop = PieceState.AUTO_DROP;
-            pieceState.move = PieceState.NONE;
-            pieceState.stopped = false;
+            context.piece = piece;
+            setPieceState('drop', PieceState.AUTO_DROP);
+            setPieceState('move', PieceState.NONE);
+            setPieceState('stopped', false);
         }
     };
 }, 'sketch');
@@ -117,18 +121,23 @@ window.addEventListener('keydown', (event) => {
     }
     if (event.key === 'ArrowLeft') {
         pieceState.move = PieceState.MOVING_LEFT;
+        handlers.handleMoveLeft.call(context, false);
     }
     if (event.key === 'ArrowRight') {
         pieceState.move = PieceState.MOVING_RIGHT;
+        handlers.handleMoveRight.call(context, false);
     }
     if (event.key === 'ArrowDown') {
         pieceState.drop = PieceState.MANUAL_DROP;
+        handlers.handleManualDrop.call(context);
     }
     if (event.key === 'ArrowUp') {
         pieceState.move = PieceState.ROTATING;
+        handlers.handleRotate.call(context);
     }
     if (event.key === ' ') {
         pieceState.drop = PieceState.FULL_DROP;
+        handlers.handleFullDrop.call(context);
     }
 });
 
@@ -140,6 +149,9 @@ window.addEventListener('keyup', (event) => {
         pieceState.move = PieceState.NONE;
     }
     if (event.key === 'ArrowDown') {
+        pieceState.drop = PieceState.AUTO_DROP;
+    }
+    if (event.key === ' ') {
         pieceState.drop = PieceState.AUTO_DROP;
     }
 });
