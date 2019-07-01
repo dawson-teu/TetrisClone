@@ -58,34 +58,49 @@ export default class Piece {
     }
 
     willCollide(nextPieceX, nextPieceY, board) {
-        let boardLeft = -Infinity;
-        let boardRight = Infinity;
-
+        const pieceLeftSide = Array(this.piece.getShape().length).fill(-1);
+        const pieceRightSide = Array(this.piece.getShape().length).fill(-1);
         for (let y = 0; y < this.piece.getShape().length; y += 1) {
             for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
-                if (this.piece.getShape()[y][x]) {
-                    boardLeft = Math.max(
-                        boardLeft,
-                        board.castRay(nextPieceX + x, nextPieceY + y, Direction.LEFT),
-                    );
-
-                    boardRight = Math.min(
-                        boardRight,
-                        board.castRay(nextPieceX + x, nextPieceY + y, Direction.RIGHT),
-                    );
+                if (this.piece.getShape()[y][x] > 0) {
+                    pieceLeftSide[y] = x;
+                    break;
+                }
+            }
+            for (let x = this.piece.getShape()[0].length - 1; x >= 0; x -= 1) {
+                if (this.piece.getShape()[y][x] > 0) {
+                    pieceRightSide[y] = x;
+                    break;
                 }
             }
         }
 
-        const pieceLeftBlock = this.leftBlock();
-        const pieceRightBlock = this.rightBlock();
-        if (pieceRightBlock + nextPieceX >= boardRight) {
+        let minLeftDist = Infinity;
+        let minRightDist = Infinity;
+        for (let i = 0; i < pieceLeftSide.length; i += 1) {
+            if (pieceLeftSide[i] > -1) {
+                const blockX = nextPieceX + pieceLeftSide[i];
+                const blockY = nextPieceY + i;
+                const currentLeftDist = blockX - board.castRay(blockX, blockY, Direction.LEFT) - 1;
+                minLeftDist = Math.min(minLeftDist, currentLeftDist);
+            }
+        }
+        for (let i = 0; i < pieceRightSide.length; i += 1) {
+            if (pieceRightSide[i] > -1) {
+                const blockX = nextPieceX + pieceRightSide[i];
+                const blockY = nextPieceY + i;
+                const currentRightDist = board.castRay(blockX, blockY, Direction.RIGHT) - blockX - 1;
+                minRightDist = Math.min(minRightDist, currentRightDist);
+            }
+        }
+
+        if (minLeftDist < 0) {
+            return true;
+        }
+        if (minRightDist < 0) {
             return true;
         }
 
-        if (pieceLeftBlock + nextPieceX <= boardLeft) {
-            return true;
-        }
         return false;
     }
 
