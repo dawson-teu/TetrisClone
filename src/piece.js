@@ -1,74 +1,47 @@
 import {
-    PieceName, PieceColour, PieceId, Direction,
+    PieceType, PieceColour, Direction, PieceShape, rotate2Darray,
 } from './resources/utility.js';
-import I from './piece-def/i.js';
-import J from './piece-def/j.js';
-import L from './piece-def/l.js';
-import O from './piece-def/o.js';
-import S from './piece-def/s.js';
-import T from './piece-def/t.js';
-import Z from './piece-def/z.js';
 
 export default class Piece {
-    constructor(type, gridWidth, gridHeight) {
+    constructor(type, gridWidth, gridHeight, x = 0, y = 0) {
         this.type = type;
         this.width = gridWidth;
         this.height = gridHeight;
-        switch (type) {
-        case PieceName.I:
-            this.piece = new I(0, 0);
-            break;
-        case PieceName.J:
-            this.piece = new J(0, 0);
-            break;
-        case PieceName.L:
-            this.piece = new L(0, 0);
-            break;
-        case PieceName.O:
-            this.piece = new O(0, 0);
-            break;
-        case PieceName.S:
-            this.piece = new S(0, 0);
-            break;
-        case PieceName.T:
-            this.piece = new T(0, 0);
-            break;
-        case PieceName.Z:
-            this.piece = new Z(0, 0);
-            break;
-        default:
-            this.piece = new T(0, 0);
-        }
+        this.data = PieceShape[PieceType[type]];
+        this.x = x;
+        this.y = y;
     }
 
     draw(sketch, blockWidth, blockHeight) {
-        for (let y = 0; y < this.piece.getShape().length; y += 1) {
-            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
-                if (this.piece.getShape()[y][x]) {
-                    sketch.fill(...PieceColour[PieceId[this.type]]);
-                    sketch.rect(
-                        (this.piece.getX() + x) * blockWidth,
-                        (this.piece.getY() + y) * blockHeight,
-                        blockWidth,
-                        blockHeight,
-                    );
+        // blockWidth > 0 and blockHeight > 0 should be true
+        for (let y = 0; y < this.data.length; y += 1) {
+            for (let x = 0; x < this.data[0].length; x += 1) {
+                if (this.data[y][x]) {
+                    sketch.fill(...PieceColour[PieceType[this.type]]);
+                    sketch.rect((this.x + x) * blockWidth, (this.y + y) * blockHeight, blockWidth, blockHeight);
                 }
             }
         }
     }
 
     willCollide(nextPieceX, nextPieceY, board) {
-        const pieceLeftSide = Array(this.piece.getShape().length).fill(-1);
-        const pieceRightSide = Array(this.piece.getShape().length).fill(-1);
-        for (let y = 0; y < this.piece.getShape().length; y += 1) {
-            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
-                if (this.piece.getShape()[y][x] > 0) {
+        const pieceLeftSide = [];
+        const pieceRightSide = [];
+
+        for (let i = 0; i < this.data.length; i += 1) {
+            pieceLeftSide.push(-1);
+            pieceRightSide.push(-1);
+        }
+
+        for (let y = 0; y < this.data.length; y += 1) {
+            for (let x = 0; x < this.data[0].length; x += 1) {
+                if (this.data[y][x] > 0) {
                     pieceLeftSide[y] = x;
                     break;
                 }
             }
-            for (let x = this.piece.getShape()[0].length - 1; x >= 0; x -= 1) {
-                if (this.piece.getShape()[y][x] > 0) {
+            for (let x = this.data[0].length - 1; x >= 0; x -= 1) {
+                if (this.data[y][x] > 0) {
                     pieceRightSide[y] = x;
                     break;
                 }
@@ -94,100 +67,70 @@ export default class Piece {
             }
         }
 
-        if (minLeftDist < 0) {
-            return true;
-        }
-        if (minRightDist < 0) {
-            return true;
-        }
-
-        return false;
+        return minLeftDist < 0 || minRightDist < 0;
     }
 
     setX(x) {
-        this.piece.setX(x);
+        this.x = x;
     }
 
     setY(y) {
-        this.piece.setY(y);
+        this.y = y;
     }
 
     drop() {
-        this.piece.setY(this.piece.getY() + 1);
+        this.y += 1;
     }
 
     getX() {
-        return this.piece.getX();
+        return this.x;
     }
 
     getY() {
-        return this.piece.getY();
+        return this.y;
     }
 
     rotate(board) {
         const tests = [0, 1, -1, 2, -2];
         for (const value of tests) {
-            const nextX = this.piece.getX() + value;
-            this.piece.rotate();
-            if (this.willCollide(nextX, this.piece.getY(), board)) {
+            const nextX = this.x + value;
+            this.data = rotate2Darray(this.data);
+            if (this.willCollide(nextX, this.y, board)) {
                 for (let j = 0; j < 3; j += 1) {
-                    this.piece.rotate();
+                    this.data = rotate2Darray(this.data);
                 }
             } else {
-                this.piece.setX(nextX);
+                this.x = nextX;
                 return;
             }
         }
     }
 
     move(direction, board) {
+        // direction should be a member of the Direction enum
         let nextX;
         if (direction === Direction.LEFT) {
-            nextX = this.piece.getX() - 1;
+            nextX = this.x - 1;
         }
         if (direction === Direction.RIGHT) {
-            nextX = this.piece.getX() + 1;
+            nextX = this.x + 1;
         }
-        if (this.willCollide(nextX, this.piece.getY(), board)) {
+        if (this.willCollide(nextX, this.y, board)) {
             return;
         }
-        this.piece.setX(nextX);
+        this.x = nextX;
     }
 
     getShape() {
-        return this.piece.getShape();
-    }
-
-    rightBlock() {
-        let maxBlockX = -Infinity;
-        for (let y = 0; y < this.piece.getShape().length; y += 1) {
-            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
-                if (this.piece.getShape()[y][x] > 0) {
-                    maxBlockX = Math.max(maxBlockX, x);
-                }
-            }
-        }
-        return maxBlockX;
-    }
-
-    leftBlock() {
-        let minBlockX = Infinity;
-        for (let y = 0; y < this.piece.getShape().length; y += 1) {
-            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
-                if (this.piece.getShape()[y][x] > 0) {
-                    minBlockX = Math.min(minBlockX, x);
-                }
-            }
-        }
-        return minBlockX;
+        return this.data;
     }
 
     intersects(board) {
-        for (let y = 0; y < this.piece.getShape().length; y += 1) {
-            for (let x = 0; x < this.piece.getShape()[0].length; x += 1) {
-                const pieceX = this.piece.getX() + x;
-                const pieceY = this.piece.getY() + y;
-                if (board.getData(pieceX, pieceY + 1) > 0 && this.piece.getShape()[y][x] === 1) {
+        for (let y = 0; y < this.data.length; y += 1) {
+            for (let x = 0; x < this.data[0].length; x += 1) {
+                const pieceX = this.x + x;
+                const pieceY = this.y + y;
+                if (board.getData(pieceX, pieceY + 1) > 0 && this.data[y][x] === 1) {
                     return true;
                 }
             }
@@ -197,9 +140,9 @@ export default class Piece {
 
     // This is for development use. Do Not Ship unless in use by production code
     reset() {
-        this.piece = new T(0, 0);
-        this.type = PieceName.T;
-        this.piece.setX(0);
-        this.piece.setY(0);
+        this.type = PieceType.T;
+        this.data = PieceShape[PieceType[this.type]];
+        this.x = 0;
+        this.y = 0;
     }
 }

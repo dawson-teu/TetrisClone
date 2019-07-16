@@ -1,61 +1,65 @@
-import { PieceState, Direction } from './resources/utility.js';
+import {
+    Direction, PieceMoveState, PieceDropState, PieceStopState,
+} from './resources/utility.js';
 
-export function handleMoveRight(fromLoop) {
-    if (this.getPieceState('stopped')) {
+export function onMoveRight(fromLoop) {
+    if (this.getPieceState('stop') === PieceStopState.STOPPED) {
         return;
     }
-    if (this.getPieceState('move') === PieceState.MOVING_RIGHT) {
+    if (this.getPieceState('move') === PieceMoveState.RIGHT) {
         this.piece.move(Direction.RIGHT, this.board);
         const nextCheckInterval = fromLoop ? this.horizontalMoveTime : this.horizontalBlockingTime;
-        setTimeout(handleMoveRight.bind(this, true), nextCheckInterval);
+        setTimeout(onMoveRight.bind(this, true), nextCheckInterval);
     }
 }
 
-export function handleMoveLeft(fromLoop) {
-    if (this.getPieceState('stopped')) {
+export function onMoveLeft(fromLoop) {
+    if (this.getPieceState('stop') === PieceStopState.STOPPED) {
         return;
     }
-    if (this.getPieceState('move') === PieceState.MOVING_LEFT) {
+    if (this.getPieceState('move') === PieceMoveState.LEFT) {
         this.piece.move(Direction.LEFT, this.board);
         const nextCheckInterval = fromLoop ? this.horizontalMoveTime : this.horizontalBlockingTime;
-        setTimeout(handleMoveLeft.bind(this, true), nextCheckInterval);
+        setTimeout(onMoveLeft.bind(this, true), nextCheckInterval);
     }
 }
 
-export function handleRotate() {
-    if (this.getPieceState('stopped')) {
+export function onRotate() {
+    if (this.getPieceState('stop') === PieceStopState.STOPPED) {
         return;
     }
-    if (this.getPieceState('move') === PieceState.ROTATING) {
+    if (this.getPieceState('move') === PieceMoveState.ROTATING) {
         this.piece.rotate(this.board);
     }
 }
 
-export function handleAutoDrop() {
-    if (this.getPieceState('stopped')) {
+export function onAutoDrop() {
+    if (this.getPieceState('stop') === PieceStopState.STOPPED) {
         return;
     }
-    if (this.getPieceState('drop') === PieceState.AUTO_DROP) {
+    if (this.getPieceState('drop') === PieceDropState.AUTO) {
         this.piece.drop();
     }
-    setTimeout(handleAutoDrop.bind(this), this.autoDropSpeed);
+    setTimeout(onAutoDrop.bind(this), this.autoDropSpeed);
 }
 
-export function handleManualDrop() {
-    if (this.getPieceState('stopped')) {
+export function onManualDrop() {
+    if (this.getPieceState('stop') === PieceStopState.STOPPED) {
         return;
     }
-    if (this.getPieceState('drop') === PieceState.MANUAL_DROP) {
+    if (this.getPieceState('drop') === PieceDropState.MANUAL) {
         this.piece.drop();
-        setTimeout(handleManualDrop.bind(this), this.manualDropSpeed);
+        setTimeout(onManualDrop.bind(this), this.manualDropSpeed);
     }
 }
 
-export function handleFullDrop() {
-    if (this.getPieceState('stopped')) {
+export function onFullDrop() {
+    if (this.getPieceState('stop') === PieceStopState.STOPPED) {
         return;
     }
-    if (this.getPieceState('drop') === PieceState.FULL_DROP) {
-        while (!this.piece.intersects(this.board)) this.piece.drop();
+    if (this.getPieceState('drop') === PieceDropState.FULL) {
+        while (!this.piece.intersects(this.board)) {
+            this.piece.drop();
+        }
     }
 }

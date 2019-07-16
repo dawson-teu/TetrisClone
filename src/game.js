@@ -1,3 +1,5 @@
+// DO NOT RUN: This code will not work. It is in the process of being refactored
+
 /* TODO
     Refactoring
         - Add comments and jsdoc (https://jsdoc.app/index.html)
@@ -33,7 +35,9 @@
 import p5 from './resources/p5.min.js';
 import Board from './board.js';
 import Piece from './piece.js';
-import { PieceState, chooseRandomPiece } from './resources/utility.js';
+import {
+    PieceType, PieceMoveState, PieceDropState, PieceStopState, randomRange,
+} from './resources/utility.js';
 import * as handlers from './event-handlers.js';
 
 const gridWidth = 10;
@@ -42,7 +46,6 @@ const gridHeight = 20;
 const blockWidth = 40;
 const blockHeight = 40;
 
-// these speeds are in units of msec/block)
 const autoDropSpeed = 500;
 const manualDropSpeed = 100;
 
@@ -50,17 +53,38 @@ const horizontalMoveTime = 75;
 const horizontalBlockingTime = 125;
 
 const board = new Board(gridWidth, gridHeight);
-let piece = new Piece(chooseRandomPiece(), gridWidth, gridWidth);
+const pieceTypeValues = Object.values(PieceType).filter(value => typeof value === 'number');
+let newPieceType = randomRange(Math.min(...pieceTypeValues), Math.max(...pieceTypeValues));
+let piece = new Piece(newPieceType, gridWidth, gridHeight);
 
-const pieceState = { drop: PieceState.NONE, move: PieceState.NONE, stopped: false };
+const pieceState = { drop: PieceDropState.AUTO, move: PieceMoveState.NONE, stop: PieceStopState.MOVING };
 
 function getPieceState(key = 'all') {
-    if (key === 'all') return pieceState;
-    return pieceState[key];
+    // key should be either 'all', 'drop', 'move', or 'stop'
+    const lowerCaseKey = key.toLocaleLowerCase();
+    if (lowerCaseKey === 'all') {
+        return pieceState;
+    }
+    return pieceState[lowerCaseKey];
 }
 
 function setPieceState(key, value) {
-    pieceState[key] = value;
+    // key should be either 'drop', 'move', or 'stop'
+    // value should be a member of PieceDropState, PieceMoveState or PieceStopState
+    const lowerCaseKey = key.toLocaleLowerCase();
+    const upperCaseValue = value.toLocaleUpperCase();
+
+    let stateValue;
+    if (lowerCaseKey === 'drop') {
+        stateValue = PieceDropState[upperCaseValue];
+    } else if (lowerCaseKey === 'move') {
+        stateValue = PieceMoveState[upperCaseValue];
+    } else if (lowerCaseKey === 'stop') {
+        stateValue = PieceStopState[upperCaseValue];
+    }
+
+    // if stateValue is undefined, the function should return
+    pieceState[lowerCaseKey] = stateValue;
 }
 
 const context = {
@@ -79,15 +103,15 @@ const context = {
     horizontalBlockingTime,
 };
 
-/* eslint-disable new-cap */
+// eslint-disable-next-line new-cap
 const game = new p5((sketch) => {
     // eslint-disable-next-line no-param-reassign
     sketch.setup = () => {
         const boardWidth = gridWidth * blockWidth;
         const boardHeight = gridHeight * blockHeight;
         sketch.createCanvas(boardWidth, boardHeight);
-        setPieceState('drop', PieceState.AUTO_DROP);
-        handlers.handleAutoDrop.call(context);
+
+        handlers.onAutoDrop.call(context);
     };
 
     // eslint-disable-next-line no-param-reassign
@@ -99,18 +123,19 @@ const game = new p5((sketch) => {
         board.draw(sketch, blockWidth, blockHeight);
 
         if (piece.intersects(board)) {
-            setPieceState('stopped', true);
+            setPieceState('stop', 'STOPPED');
             while (piece.intersects(board)) {
                 piece.setY(piece.getY() - 1);
             }
             piece.drop();
             board.add(piece);
 
-            piece = new Piece(chooseRandomPiece(), gridWidth, gridHeight);
+            newPieceType = randomRange(Math.min(...pieceTypeValues), Math.max(...pieceTypeValues));
+            piece = new Piece(newPieceType, gridWidth, gridHeight);
             context.piece = piece;
-            setPieceState('drop', PieceState.AUTO_DROP);
-            setPieceState('move', PieceState.NONE);
-            setPieceState('stopped', false);
+            setPieceState('drop', 'AUTO');
+            setPieceState('move', 'NONE');
+            setPieceState('stop', 'MOVING');
         }
     };
 }, 'sketch');
@@ -120,48 +145,48 @@ window.addEventListener('keydown', (event) => {
         return;
     }
     if (event.key === 'ArrowLeft') {
-        pieceState.move = PieceState.MOVING_LEFT;
-        handlers.handleMoveLeft.call(context, false);
+        setPieceState('move', 'LEFT');
+        handlers.onMoveLeft.call(context, false);
     }
     if (event.key === 'ArrowRight') {
-        pieceState.move = PieceState.MOVING_RIGHT;
-        handlers.handleMoveRight.call(context, false);
+        setPieceState('move', 'RIGHT');
+        handlers.onMoveRight.call(context, false);
     }
     if (event.key === 'ArrowDown') {
-        pieceState.drop = PieceState.MANUAL_DROP;
-        handlers.handleManualDrop.call(context);
+        setPieceState('drop', 'MANUAL');
+        handlers.onManualDrop.call(context);
     }
     if (event.key === 'ArrowUp') {
-        pieceState.move = PieceState.ROTATING;
-        handlers.handleRotate.call(context);
+        setPieceState('move', 'ROTATING');
+        handlers.onRotate.call(context);
     }
     if (event.key === ' ') {
-        pieceState.drop = PieceState.FULL_DROP;
-        handlers.handleFullDrop.call(context);
+        setPieceState('drop', 'FULL');
+        handlers.onFullDrop.call(context);
     }
 });
 
 window.addEventListener('keyup', (event) => {
     if (event.key === 'ArrowLeft') {
-        pieceState.move = PieceState.NONE;
+        setPieceState('move', 'NONE');
     }
     if (event.key === 'ArrowRight') {
-        pieceState.move = PieceState.NONE;
+        setPieceState('move', 'NONE');
     }
     if (event.key === 'ArrowDown') {
-        pieceState.drop = PieceState.AUTO_DROP;
+        setPieceState('drop', 'AUTO');
     }
     if (event.key === ' ') {
-        pieceState.drop = PieceState.AUTO_DROP;
+        setPieceState('drop', 'AUTO');
     }
 });
 
 // This is for development use. Do Not Ship
 if (document.readyState === 'interactive') {
     document.querySelector('#restart').onclick = () => {
-        pieceState.drop = PieceState.AUTO_DROP;
-        pieceState.move = PieceState.NONE;
-        pieceState.stopped = false;
+        setPieceState('drop', 'AUTO');
+        setPieceState('move', 'NONE');
+        setPieceState('stop', 'MOVING');
         piece.reset();
         board.reset();
     };

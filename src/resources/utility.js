@@ -1,4 +1,4 @@
-export const PieceName = {
+export const PieceType = {
     I: 1,
     J: 2,
     L: 3,
@@ -8,15 +8,11 @@ export const PieceName = {
     Z: 7,
 };
 
-export const PieceId = {
-    1: 'I',
-    2: 'J',
-    3: 'L',
-    4: 'O',
-    5: 'S',
-    6: 'T',
-    7: 'Z',
-};
+// This code allows PieceType to act as a enum with reverse lookup
+// Remove this code when TypeScript enums are set up
+for (const [key, value] of Object.entries(PieceType)) {
+    PieceType[value] = key;
+}
 
 export const PieceColour = {
     I: [1, 240, 241],
@@ -28,14 +24,32 @@ export const PieceColour = {
     Z: [240, 1, 0],
 };
 
-export const PieceState = {
+export const PieceShape = {
+    I: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+    J: [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
+    L: [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
+    O: [[1, 1], [1, 1]],
+    S: [[0, 1, 1], [1, 1, 0], [0, 0, 0]],
+    T: [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
+    Z: [[1, 1, 0], [0, 1, 1], [0, 0, 0]],
+};
+
+export const PieceMoveState = {
     NONE: 0,
-    AUTO_DROP: 1,
-    MANUAL_DROP: 2,
-    FULL_DROP: 3,
-    ROTATING: 4,
-    MOVING_LEFT: 5,
-    MOVING_RIGHT: 6,
+    LEFT: 1,
+    RIGHT: 2,
+    ROTATING: 3,
+};
+
+export const PieceDropState = {
+    AUTO: 0,
+    MANUAL: 1,
+    FULL: 2,
+};
+
+export const PieceStopState = {
+    STOPPED: 0,
+    MOVING: 1,
 };
 
 export const Direction = {
@@ -43,19 +57,8 @@ export const Direction = {
     RIGHT: 1,
 };
 
-export function transpose(array) {
-    const tranposedArr = [];
-    for (let x = 0; x < array[0].length; x += 1) {
-        const row = [];
-        for (let y = 0; y < array.length; y += 1) {
-            row.push(array[y][x]);
-        }
-        tranposedArr.push(row);
-    }
-    return tranposedArr;
-}
-
 export function new2Darray(row, col, value = 0) {
+    // row > 0 and col > 0 should be true
     const array = [];
     for (let i = 0; i < row; i += 1) {
         const newRow = [];
@@ -67,6 +70,20 @@ export function new2Darray(row, col, value = 0) {
     return array;
 }
 
-export function chooseRandomPiece() {
-    return Math.floor(Math.random() * Object.keys(PieceName).length) + 1;
+export function rotate2Darray(array) {
+    // array.width == array.height should be true
+    const newShape = new2Darray(array.length, array[0].length);
+    for (let y = 0; y < array.length; y += 1) {
+        for (let x = 0; x < array[0].length; x += 1) {
+            const newX = array[0].length - y - 1;
+            const newY = x;
+            newShape[newY][newX] = array[y][x];
+        }
+    }
+    return newShape;
+}
+
+export function randomRange(a, b) {
+    // b > a should be true
+    return Math.floor(Math.random() * (b - a + 1)) + a;
 }

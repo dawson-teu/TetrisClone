@@ -1,5 +1,5 @@
 import {
-    new2Darray, PieceColour, PieceId, Direction,
+    new2Darray, PieceColour, Direction, PieceType,
 } from './resources/utility.js';
 
 export default class Board {
@@ -10,6 +10,7 @@ export default class Board {
     }
 
     draw(sketch, blockWidth, blockHeight) {
+        // blockWidth > 0 and blockHeight > 0 should be true
         const boardWidth = this.width * blockWidth;
         const boardHeight = this.height * blockHeight;
         for (let i = 1; i < this.height; i += 1) {
@@ -23,7 +24,7 @@ export default class Board {
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
                 if (this.data[y][x] > 0) {
-                    sketch.fill(PieceColour[PieceId[this.data[y][x]]]);
+                    sketch.fill(...PieceColour[PieceType[this.data[y][x]]]);
                     sketch.rect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
                 }
             }
@@ -44,10 +45,11 @@ export default class Board {
         if (x >= this.width || x < 0 || y < 0 || y > this.height) {
             return 0;
         }
-        return this.data.concat([Array(this.width).fill(1)])[y][x];
+        return [...this.data, Array(this.width).fill(1)][y][x];
     }
 
     setData(x, y, value) {
+        // value should either be 0 or a member of PieceType
         if (x >= this.width || x < 0 || y >= this.height || y < 0) {
             return;
         }
@@ -65,6 +67,7 @@ export default class Board {
     }
 
     castRay(pieceX, pieceY, direction) {
+        // direction should be a member of the Direction enum
         if (direction === Direction.LEFT) {
             for (let i = pieceX; i >= 0; i -= 1) {
                 if (this.getData(i, pieceY) > 0) {
