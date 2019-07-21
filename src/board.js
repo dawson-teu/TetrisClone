@@ -1,9 +1,8 @@
-import {
-    new2Darray, PieceColour, Direction, PieceType,
-} from './resources/utility.js';
+import { new2Darray, PieceColour, PieceType } from './resources/utility.js';
 
 export default class Board {
     constructor(gridWidth, gridHeight) {
+        // these variables should be private
         this.width = gridWidth;
         this.height = gridHeight;
         this.data = new2Darray(gridHeight, gridWidth);
@@ -64,25 +63,6 @@ export default class Board {
                 }
             }
         }
-    }
-
-    castRay(pieceX, pieceY, direction) {
-        // direction should be a member of the Direction enum
-        if (direction === Direction.LEFT) {
-            for (let i = pieceX; i >= 0; i -= 1) {
-                if (this.getData(i, pieceY) > 0) {
-                    return i;
-                }
-            }
-        }
-        if (direction === Direction.RIGHT) {
-            for (let i = pieceX; i < this.width; i += 1) {
-                if (this.getData(i, pieceY) > 0) {
-                    return i;
-                }
-            }
-        }
-        return direction === Direction.LEFT ? -1 : this.width;
     }
 
     // This is for development use. Do Not Ship unless in use by production code

@@ -7,7 +7,7 @@ export function onMoveRight(fromLoop) {
         return;
     }
     if (this.getPieceState('move') === PieceMoveState.RIGHT) {
-        this.piece.move(Direction.RIGHT, this.board);
+        this.pieceWrapper.move(Direction.RIGHT, this.board);
         const nextCheckInterval = fromLoop ? this.horizontalMoveTime : this.horizontalBlockingTime;
         setTimeout(onMoveRight.bind(this, true), nextCheckInterval);
     }
@@ -18,7 +18,7 @@ export function onMoveLeft(fromLoop) {
         return;
     }
     if (this.getPieceState('move') === PieceMoveState.LEFT) {
-        this.piece.move(Direction.LEFT, this.board);
+        this.pieceWrapper.move(Direction.LEFT, this.board);
         const nextCheckInterval = fromLoop ? this.horizontalMoveTime : this.horizontalBlockingTime;
         setTimeout(onMoveLeft.bind(this, true), nextCheckInterval);
     }
@@ -29,7 +29,7 @@ export function onRotate() {
         return;
     }
     if (this.getPieceState('move') === PieceMoveState.ROTATING) {
-        this.piece.rotate(this.board);
+        this.pieceWrapper.rotate(this.board);
     }
 }
 
@@ -38,7 +38,7 @@ export function onAutoDrop() {
         return;
     }
     if (this.getPieceState('drop') === PieceDropState.AUTO) {
-        this.piece.drop();
+        this.pieceWrapper.drop();
     }
     setTimeout(onAutoDrop.bind(this), this.autoDropSpeed);
 }
@@ -48,7 +48,7 @@ export function onManualDrop() {
         return;
     }
     if (this.getPieceState('drop') === PieceDropState.MANUAL) {
-        this.piece.drop();
+        this.pieceWrapper.drop();
         setTimeout(onManualDrop.bind(this), this.manualDropSpeed);
     }
 }
@@ -58,8 +58,6 @@ export function onFullDrop() {
         return;
     }
     if (this.getPieceState('drop') === PieceDropState.FULL) {
-        while (!this.piece.intersects(this.board)) {
-            this.piece.drop();
-        }
+        this.pieceWrapper.fullDrop(this.board);
     }
 }

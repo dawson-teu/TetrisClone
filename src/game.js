@@ -34,11 +34,11 @@
 
 import p5 from './resources/p5.min.js';
 import Board from './board.js';
-import Piece from './piece.js';
+import PieceWrapper from './pieceWrapper.js';
 import {
-    PieceType, PieceMoveState, PieceDropState, PieceStopState, randomRange,
+    PieceType, PieceMoveState, PieceDropState, PieceStopState,
 } from './resources/utility.js';
-import * as handlers from './event-handlers.js';
+import * as handlers from './eventHandlers.js';
 
 const gridWidth = 10;
 const gridHeight = 20;
@@ -53,9 +53,7 @@ const horizontalMoveTime = 75;
 const horizontalBlockingTime = 125;
 
 const board = new Board(gridWidth, gridHeight);
-const pieceTypeValues = Object.values(PieceType).filter(value => typeof value === 'number');
-let newPieceType = randomRange(Math.min(...pieceTypeValues), Math.max(...pieceTypeValues));
-let piece = new Piece(newPieceType, gridWidth, gridHeight);
+const pieceWrapper = new PieceWrapper(gridWidth, gridHeight);
 
 const pieceState = { drop: PieceDropState.AUTO, move: PieceMoveState.NONE, stop: PieceStopState.MOVING };
 
@@ -87,6 +85,18 @@ function setPieceState(key, value) {
     pieceState[lowerCaseKey] = stateValue;
 }
 
+function onNewPiece() {
+    setPieceState('stop', 'STOPPED');
+
+    board.add(pieceWrapper.getPiece());
+
+    pieceWrapper.createNewPiece();
+
+    setPieceState('drop', 'AUTO');
+    setPieceState('move', 'NONE');
+    setPieceState('stop', 'MOVING');
+}
+
 const context = {
     gridWidth,
     gridHeight,
@@ -96,14 +106,14 @@ const context = {
     manualDropSpeed,
     horizontalMoveTime,
     board,
-    piece,
+    pieceWrapper,
     pieceState,
     getPieceState,
     setPieceState,
     horizontalBlockingTime,
 };
 
-// eslint-disable-next-line new-cap
+// eslint-disable-next-line no-unused-vars, new-cap
 const game = new p5((sketch) => {
     // eslint-disable-next-line no-param-reassign
     sketch.setup = () => {
@@ -117,26 +127,12 @@ const game = new p5((sketch) => {
     // eslint-disable-next-line no-param-reassign
     sketch.draw = () => {
         sketch.background(0);
-        piece.draw(sketch, blockWidth, blockHeight);
 
         board.update();
         board.draw(sketch, blockWidth, blockHeight);
 
-        if (piece.intersects(board)) {
-            setPieceState('stop', 'STOPPED');
-            while (piece.intersects(board)) {
-                piece.setY(piece.getY() - 1);
-            }
-            piece.drop();
-            board.add(piece);
-
-            newPieceType = randomRange(Math.min(...pieceTypeValues), Math.max(...pieceTypeValues));
-            piece = new Piece(newPieceType, gridWidth, gridHeight);
-            context.piece = piece;
-            setPieceState('drop', 'AUTO');
-            setPieceState('move', 'NONE');
-            setPieceState('stop', 'MOVING');
-        }
+        pieceWrapper.update(board, onNewPiece);
+        pieceWrapper.draw(sketch, blockWidth, blockHeight);
     };
 }, 'sketch');
 
@@ -187,7 +183,7 @@ if (document.readyState === 'interactive') {
         setPieceState('drop', 'AUTO');
         setPieceState('move', 'NONE');
         setPieceState('stop', 'MOVING');
-        piece.reset();
+        pieceWrapper.createNewPiece(PieceType.T);
         board.reset();
     };
 }
