@@ -178,10 +178,6 @@ export default class Piece {
      */
     isCollidingBoard(board) {
         // board should be a Board
-        if (this.isCollidingBoardFloor(board)) {
-            return true;
-        }
-
         const pieceLeftSide = this.pieceLeftSide();
         const pieceRightSide = this.pieceRightSide();
 
@@ -189,34 +185,6 @@ export default class Piece {
         const minRightDist = this.minRightDist(pieceRightSide, board);
 
         return minLeftDist < 0 || minRightDist < 0;
-    }
-
-    // private
-    /**
-     * Returns whether the piece is colliding with the board floor or not.
-     * Colliding in this context means intersecting with
-     * @param {Board} board - The board to check collisions against
-     * @returns {bool} - Whether the piece is colliding with the board floor or not
-     */
-    isCollidingBoardFloor(board) {
-        // board should be a Board
-        // Loop through the x-values and y-values of the piece's shape
-        for (let y = 0; y < this.shape.length; y += 1) {
-            for (let x = 0; x < this.shape[0].length; x += 1) {
-                if (this.shape[y][x] === 1 && y + this.y < this.height) {
-                    console.log(this.y + y);
-                    if (board.getData(this.x + x, this.y + y) === 1) {
-                        console.log('intersecting');
-                        // If the piece's shape has an active block at this local position,
-                        // this board position is above the board floor, and the board
-                        // has an active block at this board position, the piece is colliding
-                        // with the board floor
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     // private
