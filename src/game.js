@@ -30,7 +30,7 @@
             - https://www.tensorflow.org/js
 */
 
-import p5 from './resources/p5.min.js';
+import p5 from 'p5';
 import Board from './board.js';
 import PieceWrapper from './pieceWrapper.js';
 import { PieceMoveState, PieceDropState, PieceLockState } from './resources/utility.js';
