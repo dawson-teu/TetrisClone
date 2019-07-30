@@ -43,13 +43,14 @@ export const PieceMoveState = {
 
 export const PieceDropState = {
     AUTO: 0,
-    MANUAL: 1,
-    FULL: 2,
+    SOFT: 1,
+    HARD: 2,
 };
 
-export const PieceStopState = {
-    STOPPED: 0,
-    MOVING: 1,
+export const PieceLockState = {
+    MOVING: 0,
+    LOCKING: 1,
+    LOCKED: 2,
 };
 
 export const Direction = {
@@ -57,33 +58,64 @@ export const Direction = {
     RIGHT: 1,
 };
 
+/**
+ * Return a two-dimensional array of a specified size and filled with a specified value
+ * @param {number} row - The number of rows of the array
+ * @param {number} col - The number of cols of the array
+ * @param {*} value - The value to fill the array with
+ * @returns {*[][]} - The new two-dimensional array
+ */
 export function new2Darray(row, col, value = 0) {
-    // row > 0 and col > 0 should be true
+    // row and col should be numbers > 0
+    // Loop for the number of rows
     const array = [];
     for (let i = 0; i < row; i += 1) {
+        // For each row loop for the number of cols
         const newRow = [];
         for (let j = 0; j < col; j += 1) {
             newRow.push(value);
         }
+        // Push an array of the col size filled with the value specified
         array.push(newRow);
     }
     return array;
 }
 
+/**
+ * Returns a two-dimensional array rotated 90 degrees clockwise
+ * @param {*[][]} array - The array to rotate
+ * @returns {*[][]} - The rotated array
+ */
 export function rotate2Darray(array) {
     // array.width == array.height should be true
-    const newShape = new2Darray(array.length, array[0].length);
+    // Create a empty array with the original array's width and height
+    // to hold the rotated array
+    const rotatedArray = new2Darray(array.length, array[0].length);
+    // Loop over the indices of the original array
     for (let y = 0; y < array.length; y += 1) {
         for (let x = 0; x < array[0].length; x += 1) {
+            // 1 2 3       7 4 1
+            // 4 5 6  -->  8 5 2
+            // 7 8 9       9 6 3
+            // The new y-value should be the current x-value.
+            // i.e. The top row becomes the right column and x-values become y-values
+            // The new x-value should be the grid width minus the y-value.
+            // i.e. The left column becomes the top row. The y-values become x-values
+            // cont. (0 -> 2, 1 -> 1, 2 -> 0). These mappings follow the above formula
             const newX = array[0].length - y - 1;
             const newY = x;
-            newShape[newY][newX] = array[y][x];
+
+            // Set the data at the new position of the new array
+            // to the data at this position of the original array
+            rotatedArray[newY][newX] = array[y][x];
         }
     }
-    return newShape;
+    return rotatedArray;
 }
 
 export function randomRange(a, b) {
-    // b > a should be true
+    // a and b should be numbers and b > a should be true
+    // Math.random returns a value between 0 and 1.
+    // This value is then mapped between a and b and floored to an integer
     return Math.floor(Math.random() * (b - a + 1)) + a;
 }
