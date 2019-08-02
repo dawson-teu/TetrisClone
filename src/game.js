@@ -1,13 +1,14 @@
 /* TODO
     Refactoring
         - Tweak values for piece speeds
+        - Change the drawing code to always leave spaces between blocks
+        - Tweak drawing parameters to improve the overall look and feel
+            - i.e. piece colours, board size, block space size, 
+            ghost piece outline/fill alpha value, etc.
 
     Game Features
         - Add game end on topping out
         - Add lock delay?
-        - Spawn pieces in the middle of the board
-        - Fix random piece selection
-        - Add ghost piece
 
     UI Features
         - Add UI elements around sketch with React
@@ -15,6 +16,8 @@
         held piece, piece statistics, instructions and player profile information
         - The website should control the behaviour of the game
         - Add pause menu (in another sketch) that activates on defocus
+        - Add settings menu to adjust things like sound volume, controls
+        ghost piece on/off, ghost piece outline/fill etc.
 
     Think about? (after implementing features)
         - Remove p5.js and draw using vanilla canvas for faster load times
@@ -28,12 +31,21 @@
             - See links for more info
         - Create an AI with genetic algorithms and neural networks to play the game
             - https://www.tensorflow.org/js
+        - Add tests with jest for unit/integration testing and testing the overall game 
+            - https://jestjs.io/en/
+            - https://www.npmjs.com/package/canvas (for canvas testing)
 */
 
 import p5 from 'p5';
 import Board from './board.js';
 import PieceWrapper from './pieceWrapper.js';
-import { PieceMoveState, PieceDropState, PieceLockState } from './resources/utility.js';
+import {
+    PieceMoveState,
+    PieceDropState,
+    PieceLockState,
+    PieceType,
+    shuffleArray,
+} from './resources/utility.js';
 import * as handlers from './eventHandlers.js';
 
 // Define game constants (in units of milliseconds/block)
@@ -52,6 +64,13 @@ const horizontalBlockingTime = 125;
 // Initialize the board, the piece wrapper (to control the piece), the object to hold the piece's state
 const board = new Board(gridWidth, gridHeight);
 const pieceWrapper = new PieceWrapper(gridWidth, gridHeight);
+
+// Set the random piece bag to a shuffled array of five specific piece types.
+// These piece types allow the player to start without an overhang, unlike the S and Z pieces
+let randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'T']);
+// Take the final piece type out of the random piece bag,
+// and create the new piece using that piece type
+pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
 
 const pieceState = {
     drop: PieceDropState.AUTO,
@@ -108,8 +127,13 @@ function onNewPiece() {
     // Add the old piece to the board
     board.add(pieceWrapper.getPiece());
 
-    // Create the new piece
-    pieceWrapper.createNewPiece();
+    // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
+    if (randomPieceBag.length <= 0) {
+        randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+    }
+    // Take the final piece type out of the random piece bag,
+    // and create the new piece using that piece type
+    pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
 
     // Initialize the new piece's state to the default values
     setPieceState('drop', 'AUTO');
@@ -123,7 +147,14 @@ function onNewPiece() {
 function restartGame() {
     // Clear the board and create a new piece
     board.reset();
-    pieceWrapper.createNewPiece();
+
+    // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
+    if (randomPieceBag.length <= 0) {
+        randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+    }
+    // Take the final piece type out of the random piece bag,
+    // and create the new piece using that piece type
+    pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
 
     // Initialize the new piece's state to the default values
     setPieceState('drop', 'AUTO');
@@ -149,7 +180,7 @@ const context = {
 };
 
 // eslint-disable-next-line no-unused-vars, new-cap
-const game = new p5((sketch) => {
+const game = new p5(sketch => {
     // eslint-disable-next-line no-param-reassign
     sketch.setup = () => {
         // Create the canvas
@@ -169,12 +200,14 @@ const game = new p5((sketch) => {
         board.clearFilledLines();
         board.draw(sketch, blockWidth, blockHeight);
 
+        board.showGhostPiece(sketch, blockWidth, blockHeight, pieceWrapper.currentPiece);
+
         pieceWrapper.update(board, onNewPiece);
         pieceWrapper.draw(sketch, blockWidth, blockHeight);
     };
 }, 'sketch');
 
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', event => {
     // Don't handle events if the key is being held down.
     // The handlers will loop to handle held down keys
     if (event.repeat) {
@@ -203,7 +236,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-document.addEventListener('keyup', (event) => {
+document.addEventListener('keyup', event => {
     // When a key is released, set the state to the default.
     // This is to stop the handlers from looping
     if (event.key === 'ArrowLeft') {
@@ -222,7 +255,7 @@ document.addEventListener('keyup', (event) => {
 
 // This is for development use. Do Not Ship
 if (document.readyState === 'interactive') {
-    document.querySelector('#restart').addEventListener('click', (event) => {
+    document.querySelector('#restart').addEventListener('click', event => {
         // When the restart button is clicked, restart the game and focus on the game sketch
         restartGame();
         event.currentTarget.blur();

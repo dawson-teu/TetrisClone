@@ -1,7 +1,4 @@
-// This file needs to be commented
-import {
-    Direction, PieceMoveState, PieceDropState, PieceLockState,
-} from './resources/utility.js';
+import { Direction, PieceMoveState, PieceDropState, PieceLockState } from './resources/utility.js';
 
 /**
  * Handles the move right event

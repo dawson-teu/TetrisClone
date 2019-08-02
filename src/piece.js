@@ -1,4 +1,3 @@
-// The red areas need comments
 import {
     PieceType,
     PieceColour,
@@ -54,6 +53,17 @@ export default class Piece {
     }
 
     /**
+     * Return a copy of the current piece
+     */
+    copy() {
+        // Create and return a new piece with all the parameters of the current one
+        const pieceCopy = new Piece(this.type, this.width, this.height, this.x, this.y);
+        pieceCopy.shape = this.shape;
+
+        return pieceCopy;
+    }
+
+    /**
      * Returns whether the piece is touching the board's floor or not
      * @param {Board} board - The board to check collisions against
      * @returns {bool} - Whether the piece is touching the board's floor or not
@@ -96,7 +106,9 @@ export default class Piece {
                     // If the shape has an active block at this local position
                     // draw a rectangle at this board position with the block's width and height.
                     // The piece's colour should be the colour of the piece's type
-                    sketch.fill(...PieceColour[PieceType[this.type]]);
+                    sketch.fill(PieceColour[PieceType[this.type]]);
+                    sketch.stroke(40);
+                    sketch.strokeWeight(2);
                     sketch.rect(
                         (this.x + x) * blockWidth,
                         (this.y + y) * blockHeight,
@@ -153,6 +165,7 @@ export default class Piece {
                 for (let i = 0; i < 3; i += 1) {
                     this.shape = rotate2Darray(this.shape);
                 }
+
                 this.x -= value;
             } else {
                 // If the piece is not colliding, the rotation was successful

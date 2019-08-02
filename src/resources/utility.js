@@ -113,9 +113,43 @@ export function rotate2Darray(array) {
     return rotatedArray;
 }
 
+/**
+ * Return a random number within a certain range (inclusive)
+ * @param {number} a - The lower bound of the range
+ * @param {number} b - The upper bound of the range
+ * @returns {number} - The random number
+ */
 export function randomRange(a, b) {
     // a and b should be numbers and b > a should be true
     // Math.random returns a value between 0 and 1.
     // This value is then mapped between a and b and floored to an integer
     return Math.floor(Math.random() * (b - a + 1)) + a;
+}
+
+/**
+ * Return a shuffled version of an array. Shuffled means that the elements of
+ * the array have been randomly permuted
+ * @param {*[]} array - The array to shuffle
+ * @returns {*[]} - The shuffled array
+ */
+export function shuffleArray(array) {
+    // Create a copy of the original array and an array
+    // to hold the result of the shuffling
+    const originalArray = [...array];
+    const shuffledArray = [];
+
+    // Loop for the length of the original array
+    for (let i = 0; i < array.length; i += 1) {
+        // The following process implements a version of the Fischer-Yates shuffling algorithm
+
+        // Choose a random element from the copy of the original array
+        const randomElem = originalArray[randomRange(0, originalArray.length - 1)];
+
+        // Add the random element to the shuffled array and
+        // remove it from the copy of the original array
+        shuffledArray.push(randomElem);
+        originalArray.splice(originalArray.indexOf(randomElem), 1);
+    }
+
+    return shuffledArray;
 }

@@ -1,14 +1,12 @@
-// The red areas need comments
-
 import Piece from './piece.js';
-import { PieceType, randomRange } from './resources/utility.js';
+import { PieceType, PieceShape } from './resources/utility.js';
 
 export default class PieceWrapper {
     constructor(gridWidth, gridHeight) {
         // width, height and currentPiece should be private
         this.width = gridWidth;
         this.height = gridHeight;
-        this.createNewPiece();
+        this.currentPiece = new Piece();
     }
 
     /**
@@ -20,30 +18,20 @@ export default class PieceWrapper {
     }
 
     /**
-     * Create a new piece of either a random or set type
-     * and assign it to the current piece
+     * Create a new piece of a set type and assign it to the current piece
      * @param {PieceType} type - The new piece's type
      */
-    createNewPiece(type = 'random') {
+    createNewPiece(type) {
         // type should be a member of the PieceType enum
-        // Choose a random piece if the type is 'random'.
-        // Otherwise create a new piece of the specified type
-        if (type === 'random') {
-            // Filter the PieceType enum to remove the reverse lookup elements
-            const pieceTypeValues = Object.values(PieceType).filter(
-                value => typeof value === 'number',
-            );
-
-            // Choose a random number between the min and the max PieceType value
-            // to act as the new piece's type
-            const newPieceType = randomRange(
-                Math.min(...pieceTypeValues),
-                Math.max(...pieceTypeValues),
-            );
-            this.currentPiece = new Piece(newPieceType, this.width, this.height);
-        } else {
-            this.currentPiece = new Piece(type, this.width, this.height);
-        }
+        // Find the width of the current piece
+        const pieceWidth = PieceShape[PieceType[type]][0].length;
+        // The piece should start in the middle of the board, and if there is none, prefer the left middle.
+        // The board width divided by 2 minus the piece width divided by 2 which is equivalent to
+        // the code below, will give the correct middle-aligned starting position for the piece.
+        // Flooring the result will make it prefer the left middle if there is no middle.
+        const startX = Math.floor((this.width - pieceWidth) / 2);
+        // Create and assign the new piece
+        this.currentPiece = new Piece(type, this.width, this.height, startX, 0);
     }
 
     /**
