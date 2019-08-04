@@ -1,0 +1,21 @@
+{
+    "extends": ["airbnb-base", "p5js", "plugin:prettier/recommended", "prettier"],
+    "plugins": ["prettier"],
+    "rules": {
+        "linebreak-style": "off",
+        "import/extensions": "ignorePackages",
+        "no-unused-vars": "warn",
+        "no-restricted-syntax": "off"
+    },
+    "settings": {
+        "import/resolver": {
+            "webpack": {
+                "config": "./webpack.common.js"
+            }
+        }
+    },
+    "env": {
+        "browser": true,
+        "es6": true
+    }
+}

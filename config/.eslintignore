@@ -1,0 +1,10 @@
+node_modules/*
+**/p5.global-mode.d.ts
+**/p5.min.js
+**/*.html
+**/*.json
+build/*
+webpack.common.js
+webpack.prod.js
+webpack.dev.js
+babel.config.js

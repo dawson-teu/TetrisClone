@@ -118,14 +118,11 @@ function setPieceState(key, value) {
 }
 
 /**
- * The callback function for when a new piece is created
+ * The callback function for the game is restarted
  */
-function onNewPiece() {
-    // Lock the old piece
-    setPieceState('lock', 'LOCKED');
-
-    // Add the old piece to the board
-    board.add(pieceWrapper.getPiece());
+function restartGame() {
+    // Clear the board and create a new piece
+    board.reset();
 
     // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
     if (randomPieceBag.length <= 0) {
@@ -142,11 +139,14 @@ function onNewPiece() {
 }
 
 /**
- * The callback function for the game is restarted
+ * The callback function for when a new piece is created
  */
-function restartGame() {
-    // Clear the board and create a new piece
-    board.reset();
+function onNewPiece() {
+    // Lock the old piece
+    setPieceState('lock', 'LOCKED');
+
+    // Add the old piece to the board
+    board.add(pieceWrapper.getPiece());
 
     // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
     if (randomPieceBag.length <= 0) {

@@ -1,0 +1,4 @@
+./src/resources/p5.global-mode.d.ts
+./build/bundle.js
+./build/bundle.js.map
+./src/resources/p5.min.js
