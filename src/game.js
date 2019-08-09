@@ -7,7 +7,6 @@
             ghost piece outline/fill alpha value, etc.
 
     Game Features
-        - Add game end on topping out
         - Add lock delay?
 
     UI Features
@@ -15,9 +14,10 @@
         - These should display score/level, next 3 pieces,
         held piece, piece statistics, instructions and player profile information
         - The website should control the behaviour of the game
-        - Add pause menu (in another sketch) that activates on defocus
-        - Add settings menu to adjust things like sound volume, controls
-        ghost piece on/off, ghost piece outline/fill etc.
+        - Add start menu, game end menu, pause menu and settings menu
+            - Pause menu (in another sketch) should activate on defocus
+            - Settings menu should adjust things like sound volume, controls
+            ghost piece on/off, ghost piece outline/fill etc.
 
     Think about? (after implementing features)
         - Remove p5.js and draw using vanilla canvas for faster load times
@@ -202,7 +202,7 @@ const game = new p5(sketch => {
 
         board.showGhostPiece(sketch, blockWidth, blockHeight, pieceWrapper.currentPiece);
 
-        pieceWrapper.update(board, onNewPiece);
+        pieceWrapper.update(board, onNewPiece, restartGame);
         pieceWrapper.draw(sketch, blockWidth, blockHeight);
     };
 }, 'sketch');
