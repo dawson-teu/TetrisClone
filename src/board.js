@@ -127,7 +127,7 @@ export default class Board {
                     // the colour of the piece copy's type
                     sketch.noFill();
                     sketch.strokeWeight(2);
-                    sketch.stroke([...PieceColour[PieceType[pieceCopy.type]], 150]);
+                    sketch.stroke([...PieceColour[PieceType[pieceCopy.type]], 175]);
                     sketch.rect(
                         (pieceCopy.x + x) * blockWidth,
                         (pieceCopy.y + y) * blockHeight,
