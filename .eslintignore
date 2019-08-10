@@ -1,10 +1,11 @@
 node_modules/*
+build/*
 **/p5.global-mode.d.ts
 **/p5.min.js
 **/*.html
 **/*.json
-build/*
-webpack.common.js
-webpack.prod.js
-webpack.dev.js
+.prettierrc.js
 babel.config.js
+webpack.common.js
+webpack.dev.js
+webpack.prod.js
