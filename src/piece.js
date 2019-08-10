@@ -73,14 +73,10 @@ export default class Piece {
         // Loop through the x-values and y-values of the piece's shape
         for (let y = 0; y < this.shape.length; y += 1) {
             for (let x = 0; x < this.shape[0].length; x += 1) {
-                // Find this board position from this local position
-                const pieceX = this.x + x;
-                const pieceY = this.y + y;
-
                 // If the shape has an active block at this local position
                 // and the board position below this one is active,
                 // the piece is touching the board floor
-                if (this.shape[y][x] === 1 && board.getData(pieceX, pieceY + 1) > 0) {
+                if (this.shape[y][x] === 1 && board.getData(this.x + x, this.y + y + 1) > 0) {
                     return true;
                 }
             }
@@ -89,6 +85,19 @@ export default class Piece {
         // the piece is not touching the board floor
         return false;
     }
+
+    // #region [rgba(255, 0, 0, 0.2)]
+    isIntersectingBoardCeiling(board) {
+        for (let y = 0; y < this.shape.length; y += 1) {
+            for (let x = 0; x < this.shape[0].length; x += 1) {
+                if (this.shape[y][x] === 1 && board.getData(this.x + x, this.y + y) > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    // #endregion
 
     /**
      * Draw the piece to a sketch
@@ -137,7 +146,7 @@ export default class Piece {
         }
 
         this.x += posChange;
-        if (this.isCollidingBoard(board)) {
+        if (this.isIntersectingBoardWalls(board)) {
             this.x -= posChange;
         }
     }
@@ -160,7 +169,7 @@ export default class Piece {
             this.shape = rotate2Darray(this.shape);
 
             // If the piece is colliding with the board, the rotation failed
-            if (this.isCollidingBoard(board)) {
+            if (this.isIntersectingBoardWalls(board)) {
                 // If the rotation failed, rotate and move the piece back to its original position
                 for (let i = 0; i < 3; i += 1) {
                     this.shape = rotate2Darray(this.shape);
@@ -189,7 +198,7 @@ export default class Piece {
      * @param {Board} board - The board to check collisions against
      * @returns {bool} - Whether the piece is colliding with the board or not
      */
-    isCollidingBoard(board) {
+    isIntersectingBoardWalls(board) {
         // board should be a Board
         const pieceLeftSide = this.pieceLeftSide();
         const pieceRightSide = this.pieceRightSide();
