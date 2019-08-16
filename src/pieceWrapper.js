@@ -2,6 +2,12 @@ import Piece from './piece.js';
 import { PieceType, PieceShape } from './resources/utility.js';
 
 export default class PieceWrapper {
+    /**
+     * Create a new piece wrapper. The dimensions of the grid
+     * the wrapped piece is in should also be provided.
+     * @param {*} gridWidth
+     * @param {*} gridHeight
+     */
     constructor(gridWidth, gridHeight) {
         // width, height and currentPiece should be private
         this.width = gridWidth;

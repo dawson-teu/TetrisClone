@@ -1,6 +1,11 @@
 import { new2Darray, PieceColour, PieceType } from './resources/utility.js';
 
 export default class Board {
+    /**
+     * Create a new board with a specified width and height
+     * @param {number} gridWidth - The width of the new board
+     * @param {number} gridHeight - The height of the new board
+     */
     constructor(gridWidth, gridHeight) {
         // these variables should be private
         // gridWidth and gridHeight should be numbers > 0

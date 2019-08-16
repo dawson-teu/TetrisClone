@@ -7,6 +7,15 @@ import {
 } from './resources/utility.js';
 
 export default class Piece {
+    /**
+     * Create a new piece with a specified type and starting position.
+     * The dimensions of the grid the piece is in should also be provided.
+     * @param {PieceType} type - The type of the new piece
+     * @param {number} gridWidth - The width of the board's grid
+     * @param {number} gridHeight - The height of the board's grid
+     * @param {number} x - The starting x-position of the new piece
+     * @param {number} y - The starting y-position of the new piece
+     */
     constructor(type, gridWidth, gridHeight, x = 0, y = 0) {
         // these variables should be private
         // type should be a member of the PieceType enum
