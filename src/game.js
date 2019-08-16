@@ -254,10 +254,10 @@ document.addEventListener('keyup', event => {
 });
 
 // This is for development use. Do Not Ship
-if (document.readyState === 'interactive') {
+document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#restart').addEventListener('click', event => {
         // When the restart button is clicked, restart the game and focus on the game sketch
         restartGame();
         event.currentTarget.blur();
     });
-}
+});
