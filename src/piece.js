@@ -17,7 +17,7 @@ export default class Piece {
      * @param {number} y - The starting y-position of the new piece
      */
     constructor(type, gridWidth, gridHeight, x = 0, y = 0) {
-        // these variables should be private
+        // gridWidth, gridHeight, type should be private
         // type should be a member of the PieceType enum
         // gridWidth, gridHeight, x, and y should be numbers > 0
         this.type = type;
@@ -95,10 +95,17 @@ export default class Piece {
         return false;
     }
 
-    // #region [rgba(255, 0, 0, 0.2)]
+    /**
+     * Returns whether the piece is intersecting with the board's ceiling or not
+     * @param {Board} board - The board to check collisions against
+     */
     isIntersectingBoardCeiling(board) {
+        // Loop through the x-values and y-values of the piece's shape
         for (let y = 0; y < this.shape.length; y += 1) {
             for (let x = 0; x < this.shape[0].length; x += 1) {
+                // If the shape has an active block at this local position
+                // and the board has an active block at this board position,
+                // the piece is intersecting the board ceiling
                 if (this.shape[y][x] === 1 && board.getData(this.x + x, this.y + y) > 0) {
                     return true;
                 }
@@ -106,7 +113,6 @@ export default class Piece {
         }
         return false;
     }
-    // #endregion
 
     /**
      * Draw the piece to a sketch

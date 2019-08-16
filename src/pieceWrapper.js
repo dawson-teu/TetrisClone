@@ -53,37 +53,39 @@ export default class PieceWrapper {
         this.currentPiece.draw(sketch, blockWidth, blockHeight);
     }
 
-    // #region [rgba(255, 0, 0, 0.2)]
     /**
      * Update the piece. This means checking for game events, moving/rotating the piece
      * and calling game functions to handle the events
      * @param {Board} board - The board to check collisions against
      * @param {function} onNewPiece - The function to call when a new piece needs to be created
+     * @param {function} restartGame - The function to call when the game should be restarted
      */
     update(board, onNewPiece, restartGame) {
         // board should be a Board
         // onNewPiece should be a function
 
-        // User actions might result in the piece intersecting with the board floor
-        // Therefore, if the piece is touching/intersecting with the board floor,
-        // move it up until it doesn't intersect.
+        // User actions might result in the piece intersecting with the
+        // board floor/ceiling. It should be moved up until it stops intersecting.
         while (this.currentPiece.isIntersectingBoardCeiling(board)) {
             this.currentPiece.setY(this.currentPiece.getY() - 1);
         }
 
+        // If the piece's y-value is below 0 (above the top of the board), some
+        // part of the piece must be above the top of the board. This means the player
+        // has topped out and the game must be restarted
         if (this.currentPiece.getY() < 0) {
-            console.log('Game Over');
+            // eslint-disable-next-line no-console
+            console.info('Game Over');
             restartGame();
             return;
         }
 
+        // If the piece is touching the board floor, it will be locked.
+        // A new piece must therefore be created.
         if (this.currentPiece.isTouchingBoardFloor(board)) {
-            // If the piece is touching the board floor, it will be locked.
-            // A new piece must therefore be created.
             onNewPiece();
         }
     }
-    // #endregion
 
     /**
      * Move the current piece one block either left or right
