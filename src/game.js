@@ -34,6 +34,9 @@
         - Add tests with jest for unit/integration testing and testing the overall game 
             - https://jestjs.io/en/
             - https://www.npmjs.com/package/canvas (for canvas testing)
+        - Add multiplayer support with web sockets
+            - https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
+            - https://socket.io/
 */
 
 import p5 from 'p5';
