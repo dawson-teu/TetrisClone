@@ -5,6 +5,7 @@ import {
     PieceShape,
     rotate2Darray,
 } from './resources/utility.js';
+import Canvas from './resources/canvas.js';
 
 export default class Piece {
     /**
@@ -115,14 +116,14 @@ export default class Piece {
     }
 
     /**
-     * Draw the piece to a sketch
-     * @param {p5} sketch - The sketch to draw the board to
+     * Draw the piece to a canvas
+     * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
      * @param {number} [alpha] - The alpha value, if any, to draw the piece with
      */
-    draw(sketch, blockWidth, blockHeight, alpha) {
-        // sketch should be a p5 sketch
+    draw(canvas, blockWidth, blockHeight, alpha) {
+        // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         // Loop through the x-values and y-values of the piece's shape
         for (let y = 0; y < this.shape.length; y += 1) {
@@ -131,14 +132,16 @@ export default class Piece {
                     // If the shape has an active block at this local position
                     // draw a rectangle at this board position with the block's width and height.
                     // The piece's colour should be the colour of the piece's type
-                    sketch.fill(...PieceColour[PieceType[this.type]], alpha);
-                    sketch.stroke(40);
-                    sketch.strokeWeight(2);
-                    sketch.rect(
+                    canvas.rect(
                         (this.x + x) * blockWidth,
                         (this.y + y) * blockHeight,
                         blockWidth,
                         blockHeight,
+                        {
+                            strokeColour: Canvas.Colour(40, 40, 40),
+                            strokeWeight: 2,
+                            fillColour: Canvas.Colour(...PieceColour[PieceType[this.type]], alpha),
+                        },
                     );
                 }
             }

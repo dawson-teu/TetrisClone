@@ -36,7 +36,7 @@
             - https://socket.io/
 */
 
-import p5 from 'p5';
+import Canvas from './resources/canvas.js';
 import Board from './board.js';
 import PieceWrapper from './pieceWrapper.js';
 import {
@@ -199,49 +199,43 @@ const context = {
     horizontalBlockingTime,
 };
 
-// eslint-disable-next-line no-unused-vars, new-cap
-const game = new p5(sketch => {
-    // eslint-disable-next-line no-param-reassign
-    sketch.setup = () => {
-        // Create the canvas
-        const boardWidth = gridWidth * blockWidth;
-        const boardHeight = gridHeight * blockHeight;
-        sketch.createCanvas(boardWidth, boardHeight);
+// Create the canvas
+const boardWidth = gridWidth * blockWidth;
+const boardHeight = gridHeight * blockHeight;
 
-        // Set the automatic drop handler to check repeatedly after a certain time
-        setInterval(handlers.onAutoDrop.bind(context), autoDropTime);
+const canvas = new Canvas(boardWidth, boardHeight, '#sketch');
 
-        // Update the last frame time
-        lastFrameTime = Date.now();
-    };
+// Set the automatic drop handler to check repeatedly after a certain time
+setInterval(handlers.onAutoDrop.bind(context), autoDropTime);
 
-    // eslint-disable-next-line no-param-reassign
-    sketch.draw = () => {
-        // Clear the screen and set the colour to black
-        sketch.background(0);
+// Update the last frame time
+lastFrameTime = Date.now();
 
-        board.clearFilledLines();
-        board.draw(sketch, blockWidth, blockHeight);
+const draw = () => {
+    // Clear the screen and set the colour to black
+    canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: Canvas.Colour(0, 0, 0) });
 
-        // Don't show the ghost piece if the piece is locking.
-        // This is because it doesn't look nice
-        if (getPieceState('lock') !== PieceLockState.LOCKING) {
-            board.showGhostPiece(sketch, blockWidth, blockHeight, pieceWrapper.currentPiece);
-        }
+    board.clearFilledLines();
+    board.draw(canvas, blockWidth, blockHeight);
 
-        pieceWrapper.update(board, getPieceState, onNewPiece, restartGame);
-        pieceWrapper.draw(
-            sketch,
-            blockWidth,
-            blockHeight,
-            Date.now() - lastFrameTime,
-            lockDelayTime,
-        );
+    // Don't show the ghost piece if the piece is locking.
+    // This is because it doesn't look nice
+    if (getPieceState('lock') !== PieceLockState.LOCKING) {
+        board.showGhostPiece(canvas, blockWidth, blockHeight, pieceWrapper.currentPiece);
+    }
 
-        // Update the last frame time
-        lastFrameTime = Date.now();
-    };
-}, 'sketch');
+    pieceWrapper.update(board, getPieceState, onNewPiece, restartGame);
+    pieceWrapper.draw(canvas, blockWidth, blockHeight, Date.now() - lastFrameTime, lockDelayTime);
+
+    // Update the last frame time
+    lastFrameTime = Date.now();
+
+    // Continue the game loop by drawing the next frame
+    window.requestAnimationFrame(draw);
+};
+
+// Start the game loop by drawing the first frame
+window.requestAnimationFrame(draw);
 
 document.addEventListener('keydown', event => {
     // Don't handle events if the key is being held down.

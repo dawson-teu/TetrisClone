@@ -1,4 +1,5 @@
 import { new2Darray, PieceColour, PieceType } from './resources/utility.js';
+import Canvas from './resources/canvas.js';
 
 export default class Board {
     /**
@@ -72,26 +73,32 @@ export default class Board {
     }
 
     /**
-     * Draw the board to a specific sketch
-     * @param {p5} sketch - The sketch to draw the board to
+     * Draw the board to a specific canvas
+     * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
      */
-    draw(sketch, blockWidth, blockHeight) {
-        // sketch should be a p5 sketch
+    draw(canvas, blockWidth, blockHeight) {
+        // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         const boardWidth = this.width * blockWidth;
         const boardHeight = this.height * blockHeight;
 
         // Draw the horizontal board outlines
-        sketch.strokeWeight(1);
-        sketch.stroke(40);
         for (let i = 1; i < this.height; i += 1) {
-            sketch.line(0, i * blockHeight, boardWidth, i * blockHeight);
+            canvas.path(
+                [Canvas.Point(0, i * blockHeight), Canvas.Point(boardWidth, i * blockHeight)],
+                false,
+                { strokeColour: Canvas.Colour(40, 40, 40), strokeWeight: 1 },
+            );
         }
         // Draw the vertical board outlines
         for (let i = 1; i < this.width; i += 1) {
-            sketch.line(i * blockWidth, 0, i * blockWidth, boardHeight);
+            canvas.path(
+                [Canvas.Point(i * blockHeight, 0), Canvas.Point(i * blockWidth, boardHeight)],
+                false,
+                { strokeColour: Canvas.Colour(40, 40, 40), strokeWeight: 1 },
+            );
         }
         // Loop through the board data to find filled blocks and
         // draw the filled blocks as rectangles with the colour
@@ -99,8 +106,9 @@ export default class Board {
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
                 if (this.data[y][x] > 0) {
-                    sketch.fill(PieceColour[PieceType[this.data[y][x]]]);
-                    sketch.rect(x * blockWidth, y * blockHeight, blockWidth, blockHeight);
+                    canvas.rect(x * blockWidth, y * blockHeight, blockWidth, blockHeight, {
+                        fillColour: Canvas.Colour(...PieceColour[PieceType[this.data[y][x]]]),
+                    });
                 }
             }
         }
@@ -109,12 +117,12 @@ export default class Board {
     /**
      * Show a piece-coloured outline of the ghost piece on the board.
      * The ghost piece represents where the piece will land after dropping
-     * @param {p5} sketch - The sketch to draw the board to
+     * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
      * @param {Piece} piece - The piece to draw the ghost piece of
      */
-    showGhostPiece(sketch, blockWidth, blockHeight, piece) {
+    showGhostPiece(canvas, blockWidth, blockHeight, piece) {
         // Make a copy of the piece to perform operations on
         const pieceCopy = piece.copy();
         // Drop the piece copy until it touches the board floor. This is where
@@ -130,14 +138,16 @@ export default class Board {
                     // If the piece copy has an active block at this local position,
                     // draw a clear rectangle with a coloured border. The border will
                     // the colour of the piece copy's type
-                    sketch.noFill();
-                    sketch.strokeWeight(2);
-                    sketch.stroke([...PieceColour[PieceType[pieceCopy.type]], 175]);
-                    sketch.rect(
+                    canvas.rect(
                         (pieceCopy.x + x) * blockWidth,
                         (pieceCopy.y + y) * blockHeight,
                         blockWidth,
                         blockHeight,
+                        {
+                            strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
+                            strokeWidth: 2,
+                            fillColour: Canvas.Colour(0, 0, 0, 0),
+                        },
                     );
                 }
             }

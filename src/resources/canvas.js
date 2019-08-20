@@ -69,7 +69,7 @@ class Point {
 }
 
 // eslint-disable-next-line no-unused-vars
-class Canvas {
+export default class Canvas {
     /**
      * Create a new canvas with a specified width and height.
      * If the root element selector specified results in a canvas element,
@@ -121,8 +121,8 @@ class Canvas {
      * @param {number} y - The y-position
      * @param {number} width - The width
      * @param {number} [height] - The height (optional)
-     * @param {Canvas.Colour} [options.strokeColour] - The colour to draw the ellipse's outline (optional)
-     * @param {number} [options.strokeWidth] - The width to draw the ellipse's outline (optional)
+     * @param {Canvas.Colour} [options.strokeColour] - The colour to draw the rectangle's outline (optional)
+     * @param {number} [options.strokeWidth] - The width to draw the rectangle's outline (optional)
      * @param {Canvas.Colour} [options.fillColour] - The colour to draw the rectangle (optional)
      */
     rect(x, y, width, height = width, { strokeColour = null, strokeWidth = 1, fillColour = null }) {

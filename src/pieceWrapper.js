@@ -47,17 +47,17 @@ export default class PieceWrapper {
     }
 
     /**
-     * Draw the current piece to a sketch
+     * Draw the current piece to a canvas
      * (This is a wrapper for the piece's draw function)
-     * @param {p5} sketch - The sketch to draw the board to
+     * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
      * @param {number} deltaTime - The difference in time between this frame and the last
      * @param {number} lockDelayTime - The amount of time a piece should have between
      *  touching the floor and being fully locked
      */
-    draw(sketch, blockWidth, blockHeight, deltaTime, lockDelayTime) {
-        // sketch should be a p5 sketch
+    draw(canvas, blockWidth, blockHeight, deltaTime, lockDelayTime) {
+        // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         // If the piece is not locking the animation time should be reset to 0.
         // If it is, the animation time should be updated
@@ -71,7 +71,7 @@ export default class PieceWrapper {
         // This depends on how far the piece is through the locking animation and is meant
         // to animate the piece fading out.
         this.currentPiece.draw(
-            sketch,
+            canvas,
             blockWidth,
             blockHeight,
             lerp(255, 0, this.lockingAnimationTime / lockDelayTime),
