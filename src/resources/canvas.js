@@ -1,14 +1,27 @@
+// private
 // eslint-disable-next-line no-unused-vars
 class Colour {
+    /**
+     * Create a new Canvas with red, green, blue, and alpha values
+     * @param {number} r - The red value
+     * @param {number} g - The green value
+     * @param {number} b - The blue value
+     * @param {number} [a] - The alpha value (optional)
+     */
     constructor(r, g, b, a = null) {
         // r, g, and b should be numbers
         // a should be a number or not specified
+        // these variables should be private
         this.r = Colour.clampInColourRange(r);
         this.g = Colour.clampInColourRange(g);
         this.b = Colour.clampInColourRange(b);
         this.a = a ? Colour.clampInColourRange(a) : a;
     }
 
+    /**
+     * Return a canvas style string with the red, green, blue and alpha values
+     * @returns {string} - The canvas style string
+     */
     getString() {
         if (this.a) {
             return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
@@ -17,20 +30,39 @@ class Colour {
     }
 
     // private
+    /**
+     * Return a clamped value in the colour range (0 - 255)
+     * @param {number} number - The value to clamp
+     * @returns {number} - The clamped value
+     */
     static clampInColourRange(number) {
         // number should be a number
+        // The minimum of the number and 255 will be less than or equal to 255.
+        // The maximum of that and 0 will be greater than or equal to 0.
+        // This means that the number is clamped between 0 and 255
         return Math.max(0, Math.min(number, 255));
     }
 }
 
+// private
 // eslint-disable-next-line no-unused-vars
 class Point {
+    /**
+     * Create a new Point with a x-value and y-value
+     * @param {number} x - The x-value
+     * @param {number} y - The y-value
+     */
     constructor(x, y) {
+        // these variables should be private
         // x and y should be numbers
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Return an object with the x-value and y-value
+     * @returns {object} {{x: the x-value, y: the y-value}}
+     */
     getPoints() {
         return { x: this.x, y: this.y };
     }
@@ -52,6 +84,8 @@ class Canvas {
     constructor(width, height, rootElementSelector) {
         // width and height should be a number
         // rootElementSelector should be a string
+        // Try to get the element associated with the root element selector.
+        // If it fails, print a warning and use the body element
         let rootElement = document.querySelector(rootElementSelector);
         if (!rootElement) {
             console.warn(
@@ -60,6 +94,8 @@ class Canvas {
             rootElement = document.querySelector('body');
         }
 
+        // If the root element is a canvas element, use that as the canvas element
+        // Otherwise, create a new canvas element as a child of the root element
         let canvasElement;
         if (rootElement.tagName.toLowerCase() === 'canvas') {
             rootElement.width = width;
@@ -73,14 +109,23 @@ class Canvas {
             rootElement.appendChild(canvasElement);
         }
 
-        // these variables should be private;
+        // these variables should be private
         this.context = canvasElement.getContext('2d');
         this.width = width;
         this.height = height;
     }
 
-    // #region[rgba(255, 0, 0, 0.2)]
-    rect(x, y, width, height = width, strokeColour = null, strokeWidth = 1, fillColour = null) {
+    /**
+     * Draw a rectangle to the canvas
+     * @param {number} x - The x-position
+     * @param {number} y - The y-position
+     * @param {number} width - The width
+     * @param {number} [height] - The height (optional)
+     * @param {Canvas.Colour} [options.strokeColour] - The colour to draw the ellipse's outline (optional)
+     * @param {number} [options.strokeWidth] - The width to draw the ellipse's outline (optional)
+     * @param {Canvas.Colour} [options.fillColour] - The colour to draw the rectangle (optional)
+     */
+    rect(x, y, width, height = width, { strokeColour = null, strokeWidth = 1, fillColour = null }) {
         // x, y, width and height should be numbers
         // strokeColour and fillColour should be a Colour or null
         // strokeWidth should be a number
@@ -90,13 +135,26 @@ class Canvas {
         this.drawPath2D(rectangle, strokeColour, strokeWidth, fillColour);
     }
 
-    ellipse(x, y, width, height = width, strokeColour = null, strokeWidth = 1, fillColour = null) {
+    /**
+     * Draw an ellipse to the canvas
+     * @param {number} x - The x-position
+     * @param {number} y - The y-position
+     * @param {number} width - The width
+     * @param {number} [height] - The height (optional)
+     * @param {Canvas.Colour} [options.strokeColour] - The colour to draw the ellipse's outline (optional)
+     * @param {number} [options.strokeWidth] - The width to draw the ellipse's outline (optional)
+     * @param {Canvas.Colour} [options.fillColour] - The colour to draw the ellipse (optional)
+     */
+    ellipse(x, y, w, h = w, { strokeColour = null, strokeWidth = 1, fillColour = null }) {
         // x, y, width and height should be numbers
         // strokeColour and fillColour should be a Colour or null
         // strokeWidth should be a number
         const ellipse = new Path2D();
 
+        // Approximate a circle using 4 bezier curves
         const l = (4 / 3) * Math.tan(Math.PI / 8);
+        const width = w;
+        const height = h;
 
         ellipse.moveTo(x, y + height / 2);
         ellipse.bezierCurveTo(
@@ -138,7 +196,15 @@ class Canvas {
         this.drawPath2D(ellipse, strokeColour, strokeWidth, fillColour);
     }
 
-    path(pointList, closePath, strokeColour = null, strokeWidth = 1, fillColour = null) {
+    /**
+     * Draw a path (a list of points) to the canvas
+     * @param {Canvas.Point[]} pointList - The list of points to draw
+     * @param {bool} closePath - Whether the path should be closed
+     * @param {Canvas.Colour} [options.strokeColour] - The colour to draw the path's outline (optional)
+     * @param {number} [options.strokeWidth] - The width to draw the path's outline (optional)
+     * @param {Canvas.Colour} [options.fillColour] - The colour to draw the path (optional)
+     */
+    path(pointList, closePath, { strokeColour = null, strokeWidth = 1, fillColour = null }) {
         // pointList should be an array of Points with at least one element
         // strokeColour and fillColour should be a Colour or null
         // strokeWidth should be a number
@@ -147,8 +213,10 @@ class Canvas {
         }
         const path = new Path2D();
 
+        // The first point needs to be moved to. The rest can have lines drawn to them.
         path.moveTo(pointList[0].getPoints().x, pointList[0].getPoints().y);
 
+        // Loop through the points list, ignoring the first, since it has been drawn already.
         for (const point of pointList.slice(1, pointList.length)) {
             const { x, y } = point.getPoints();
             path.lineTo(x, y);
@@ -161,15 +229,36 @@ class Canvas {
         this.drawPath2D(path, strokeColour, strokeWidth, fillColour);
     }
 
+    /**
+     * Return a Canvas.Colour with the specified values
+     * @param {number} r - The red value
+     * @param {number} g - The green value
+     * @param {number} b - The blue value
+     * @param {number} [a] - The alpha value (optional)
+     * @returns {Canvas.Colour} - A Canvas.Colour with the specified values
+     */
     static Colour(r, g, b, a = null) {
         return new Colour(r, g, b, a);
     }
 
+    /**
+     * Return a Canvas.Point with the specified values
+     * @param {number} x - The x-value
+     * @param {number} y - The y-value
+     * @returns {Canvas.Point} - A Canvas.Point with the specified values
+     */
     static Point(x, y) {
         return new Point(x, y);
     }
 
     // private
+    /**
+     * Draw a Path2D to the context with a stroke colour, stroke width, and fill colour
+     * @param {Path2D} path - The path to draw
+     * @param {Canvas.Colour} strokeColour - The colour to draw the stroke
+     * @param {number} strokeWidth - The width to draw the stroke
+     * @param {Canvas.Colour} fillColour - The colour to fill the path
+     */
     drawPath2D(path, strokeColour, strokeWidth, fillColour) {
         // path should be a Path2d
         // strokeColour and fillColour should be a Colour or null
@@ -190,5 +279,3 @@ class Canvas {
         this.context.fill(path);
     }
 }
-
-// #endregion
