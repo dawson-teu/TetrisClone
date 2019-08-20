@@ -6,9 +6,6 @@
             - i.e. piece colours, board size, block space size, 
             ghost piece outline/fill alpha value, etc.
 
-    Game Features
-        - Add lock delay?
-
     UI Features
         - Add UI elements around sketch with React
         - These should display score/level, next 3 pieces,
@@ -64,6 +61,8 @@ const softDropTime = 100;
 const horizontalMoveTime = 75;
 const horizontalBlockingTime = 125;
 
+const lockDelayTime = 500;
+
 // Initialize the board, the piece wrapper (to control the piece), the object to hold the piece's state
 const board = new Board(gridWidth, gridHeight);
 const pieceWrapper = new PieceWrapper(gridWidth, gridHeight);
@@ -81,9 +80,13 @@ const pieceState = {
     lock: PieceLockState.MOVING,
 };
 
+// Create a variable to hold the time the last frame was drawn.
+// This is used to calculate deltaTime
+let lastFrameTime;
+
 /**
  * Get either one parameter or all of the piece's state
- * @param {'all' | 'drop' | 'move' | 'lock'} key - The parameter of the state to return
+ * @param {'drop' | 'move' | 'lock'} [key] - The parameter of the state to return
  * @returns {PieceDropState | PieceMoveState | PieceLockState} - The parameter of the state specified
  */
 function getPieceState(key = 'all') {
@@ -143,26 +146,40 @@ function restartGame() {
 
 /**
  * The callback function for when a new piece is created
+ * @param {bool} lockImmediately - Whether the piece should be locked immediately,
+ *  or after the lock delay. This is useful to lock hard drops immediately
  */
-function onNewPiece() {
-    // Lock the old piece
-    setPieceState('lock', 'LOCKED');
+function onNewPiece(lockImmediately) {
+    // Set the old piece to locking
+    setPieceState('lock', 'LOCKING');
 
-    // Add the old piece to the board
-    board.add(pieceWrapper.getPiece());
+    // Create a function to be called when the piece locks.
+    const lockPiece = () => {
+        // Set the old piece to locked
+        setPieceState('lock', 'LOCKED');
 
-    // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
-    if (randomPieceBag.length <= 0) {
-        randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+        // Add the old piece to the board
+        board.add(pieceWrapper.getPiece());
+
+        // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
+        if (randomPieceBag.length <= 0) {
+            randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+        }
+        // Take the final piece type out of the random piece bag,
+        // and create the new piece using that piece type
+        pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
+
+        // Initialize the new piece's state to the default values
+        setPieceState('drop', 'AUTO');
+        setPieceState('move', 'NONE');
+        setPieceState('lock', 'MOVING');
+    };
+
+    if (lockImmediately) {
+        lockPiece();
+    } else {
+        setTimeout(lockPiece, lockDelayTime);
     }
-    // Take the final piece type out of the random piece bag,
-    // and create the new piece using that piece type
-    pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
-
-    // Initialize the new piece's state to the default values
-    setPieceState('drop', 'AUTO');
-    setPieceState('move', 'NONE');
-    setPieceState('lock', 'MOVING');
 }
 
 // Set the context for the event handlers
@@ -191,8 +208,11 @@ const game = new p5(sketch => {
         const boardHeight = gridHeight * blockHeight;
         sketch.createCanvas(boardWidth, boardHeight);
 
-        // Call the automatic drop handler to start dropping the piece automatically
-        handlers.onAutoDrop.call(context);
+        // Set the automatic drop handler to check repeatedly after a certain time
+        setInterval(handlers.onAutoDrop.bind(context), autoDropTime);
+
+        // Update the last frame time
+        lastFrameTime = Date.now();
     };
 
     // eslint-disable-next-line no-param-reassign
@@ -203,10 +223,23 @@ const game = new p5(sketch => {
         board.clearFilledLines();
         board.draw(sketch, blockWidth, blockHeight);
 
-        board.showGhostPiece(sketch, blockWidth, blockHeight, pieceWrapper.currentPiece);
+        // Don't show the ghost piece if the piece is locking.
+        // This is because it doesn't look nice
+        if (getPieceState('lock') !== PieceLockState.LOCKING) {
+            board.showGhostPiece(sketch, blockWidth, blockHeight, pieceWrapper.currentPiece);
+        }
 
-        pieceWrapper.update(board, onNewPiece, restartGame);
-        pieceWrapper.draw(sketch, blockWidth, blockHeight);
+        pieceWrapper.update(board, getPieceState, onNewPiece, restartGame);
+        pieceWrapper.draw(
+            sketch,
+            blockWidth,
+            blockHeight,
+            Date.now() - lastFrameTime,
+            lockDelayTime,
+        );
+
+        // Update the last frame time
+        lastFrameTime = Date.now();
     };
 }, 'sketch');
 

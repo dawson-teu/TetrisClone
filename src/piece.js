@@ -13,8 +13,8 @@ export default class Piece {
      * @param {PieceType} type - The type of the new piece
      * @param {number} gridWidth - The width of the board's grid
      * @param {number} gridHeight - The height of the board's grid
-     * @param {number} x - The starting x-position of the new piece
-     * @param {number} y - The starting y-position of the new piece
+     * @param {number} [x] - The starting x-position of the new piece
+     * @param {number} [y] - The starting y-position of the new piece
      */
     constructor(type, gridWidth, gridHeight, x = 0, y = 0) {
         // gridWidth, gridHeight, type should be private
@@ -119,8 +119,9 @@ export default class Piece {
      * @param {p5} sketch - The sketch to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
+     * @param {number} [alpha] - The alpha value, if any, to draw the piece with
      */
-    draw(sketch, blockWidth, blockHeight) {
+    draw(sketch, blockWidth, blockHeight, alpha) {
         // sketch should be a p5 sketch
         // blockWidth and blockHeight should be numbers > 0
         // Loop through the x-values and y-values of the piece's shape
@@ -130,7 +131,7 @@ export default class Piece {
                     // If the shape has an active block at this local position
                     // draw a rectangle at this board position with the block's width and height.
                     // The piece's colour should be the colour of the piece's type
-                    sketch.fill(PieceColour[PieceType[this.type]]);
+                    sketch.fill(...PieceColour[PieceType[this.type]], alpha);
                     sketch.stroke(40);
                     sketch.strokeWeight(2);
                     sketch.rect(

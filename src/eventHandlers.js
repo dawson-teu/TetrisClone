@@ -72,8 +72,12 @@ export function onRotate() {
  * Handles the automatic drop event
  */
 export function onAutoDrop() {
-    // If the piece is locked, it should not be automatically dropped and the function should exit
-    if (this.getPieceState('lock') === PieceLockState.LOCKED) {
+    // If the piece is locked or locking, it should not be automatically dropped
+    // and the function should exit
+    if (
+        this.getPieceState('lock') === PieceLockState.LOCKED ||
+        this.getPieceState('lock') === PieceLockState.LOCKING
+    ) {
         return;
     }
 
@@ -81,12 +85,6 @@ export function onAutoDrop() {
     if (this.getPieceState('drop') === PieceDropState.AUTO) {
         this.pieceWrapper.drop();
     }
-
-    // The event handler should always check again, even when the piece's state
-    // isn't automatically dropping.
-    // NOTE: Moving this line into the if statement will cause undocumented behaviour.
-    // The cause of this is not well understood.
-    setTimeout(onAutoDrop.bind(this), this.autoDropTime);
 }
 
 /**

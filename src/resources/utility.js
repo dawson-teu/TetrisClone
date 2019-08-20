@@ -153,3 +153,14 @@ export function shuffleArray(array) {
 
     return shuffledArray;
 }
+
+/**
+ * Linearly interpolate between two values, given a time between 0 and 1
+ * @param {number} a - The first value
+ * @param {number} b - The second value
+ * @param {number} time - The time with which to interpolate
+ * @returns {number} - The interpolated value
+ */
+export function lerp(a, b, time) {
+    return (1 - time) * a + time * b;
+}
