@@ -5,6 +5,8 @@
         - Tweak drawing parameters to improve the overall look and feel
             - i.e. piece colours, board size, block space size, 
             ghost piece outline/fill alpha value, etc.
+        - Map out function call chain to make the order of call execution more clear
+            - This should help during debugging
 
     UI Features
         - Add UI elements around sketch with React
@@ -15,6 +17,15 @@
             - Pause menu (in another sketch) should activate on defocus
             - Settings menu should adjust things like sound volume, controls
             ghost piece on/off, ghost piece outline/fill etc.
+
+    Event System Improvements
+        - Simplify event handling chain
+        - Use an event library to handle the subscribing and emitting of events
+            - Create one from scratch?
+        - Handle keyboard events in the main loop 
+            - This makes the execution of the code less disjointed and more predictable
+            - To slow down movement, have a timer for every action and emit event 
+            only when the timer exceeds the delay
 
     Think about? (after implementing features)
         - Remove p5.js and draw using vanilla canvas for faster load times
