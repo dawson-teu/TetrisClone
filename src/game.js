@@ -1,10 +1,8 @@
 /* TODO
     Refactoring
         - Tweak values for piece speeds
-        - Change the drawing code to always leave spaces between blocks
         - Tweak drawing parameters to improve the overall look and feel
-            - i.e. piece colours, board size, block space size, 
-            ghost piece outline/fill alpha value, etc.
+            - i.e. piece colours
         - Map out function call chain to make the order of call execution more clear
             - This should help during debugging
 
@@ -65,6 +63,8 @@ const gridHeight = 20;
 
 const blockWidth = 40;
 const blockHeight = 40;
+
+const lineWidth = blockWidth / 20;
 
 const autoDropTime = 500;
 const softDropTime = 100;
@@ -227,16 +227,23 @@ const draw = () => {
     canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: Canvas.Colour(0, 0, 0) });
 
     board.clearFilledLines();
-    board.draw(canvas, blockWidth, blockHeight);
+    board.draw(canvas, blockWidth, blockHeight, lineWidth);
 
     // Don't show the ghost piece if the piece is locking.
     // This is because it doesn't look nice
     if (getPieceState('lock') !== PieceLockState.LOCKING) {
-        board.showGhostPiece(canvas, blockWidth, blockHeight, pieceWrapper.currentPiece);
+        board.showGhostPiece(canvas, blockWidth, blockHeight, lineWidth, pieceWrapper.currentPiece);
     }
 
     pieceWrapper.update(board, getPieceState, onNewPiece, restartGame);
-    pieceWrapper.draw(canvas, blockWidth, blockHeight, Date.now() - lastFrameTime, lockDelayTime);
+    pieceWrapper.draw(
+        canvas,
+        blockWidth,
+        blockHeight,
+        lineWidth,
+        Date.now() - lastFrameTime,
+        lockDelayTime,
+    );
 
     // Update the last frame time
     lastFrameTime = Date.now();

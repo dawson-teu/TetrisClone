@@ -3,19 +3,22 @@
 class Colour {
     /**
      * Create a new Canvas with red, green, blue, and alpha values
-     * @param {number} r - The red value
-     * @param {number} g - The green value
-     * @param {number} b - The blue value
+     * @param {number} r - The red value. If the green and blue values are
+     *  not specified, this value will be used as a grayscale value
+     * @param {number} g - The green value. If this value is not specified,
+     *  the red value will be used as a grayscale value (optional)
+     * @param {number} b - The blue value. If this value is not specified,
+     *  the red value will be used as a grayscale value (optional)
      * @param {number} [a] - The alpha value (optional)
      */
-    constructor(r, g, b, a = null) {
+    constructor(r, g = -1, b = -1, a = -1) {
         // r, g, and b should be numbers
         // a should be a number or not specified
         // these variables should be private
         this.r = Colour.clampInColourRange(r);
-        this.g = Colour.clampInColourRange(g);
-        this.b = Colour.clampInColourRange(b);
-        this.a = a ? Colour.clampInColourRange(a) : a;
+        this.g = g >= 0 ? Colour.clampInColourRange(g) : r;
+        this.b = b >= 0 ? Colour.clampInColourRange(b) : r;
+        this.a = a >= 0 ? Colour.clampInColourRange(a) : a;
     }
 
     /**
@@ -24,7 +27,7 @@ class Colour {
      */
     getString() {
         if (this.a) {
-            return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+            return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a / 255})`;
         }
         return `rgb(${this.r}, ${this.g}, ${this.b})`;
     }
@@ -125,12 +128,12 @@ export default class Canvas {
      * @param {number} [options.strokeWidth] - The width to draw the rectangle's outline (optional)
      * @param {Canvas.Colour} [options.fillColour] - The colour to draw the rectangle (optional)
      */
-    rect(x, y, width, height = width, { strokeColour = null, strokeWidth = 1, fillColour = null }) {
+    rect(x, y, w, h = w, { strokeColour = null, strokeWidth = 1, fillColour = null } = {}) {
         // x, y, width and height should be numbers
         // strokeColour and fillColour should be a Colour or null
         // strokeWidth should be a number
         const rectangle = new Path2D();
-        rectangle.rect(x, y, width, height);
+        rectangle.rect(x, y, w, h);
 
         this.drawPath2D(rectangle, strokeColour, strokeWidth, fillColour);
     }
@@ -145,52 +148,89 @@ export default class Canvas {
      * @param {number} [options.strokeWidth] - The width to draw the ellipse's outline (optional)
      * @param {Canvas.Colour} [options.fillColour] - The colour to draw the ellipse (optional)
      */
-    ellipse(x, y, w, h = w, { strokeColour = null, strokeWidth = 1, fillColour = null }) {
+    ellipse(x, y, w, h = w, { strokeColour = null, strokeWidth = 1, fillColour = null } = {}) {
         // x, y, width and height should be numbers
         // strokeColour and fillColour should be a Colour or null
         // strokeWidth should be a number
         const ellipse = new Path2D();
 
-        // Approximate a circle using 4 bezier curves
-        const l = (4 / 3) * Math.tan(Math.PI / 8);
-        const width = w;
-        const height = h;
+        // Approximate a circle using 8 bezier curves
+        const l = (4 / 3) * Math.tan(Math.PI / 16);
+        const sqrt2 = Math.sqrt(2);
+        const d = l / sqrt2;
 
-        ellipse.moveTo(x, y + height / 2);
+        ellipse.moveTo(x + w / 2, y);
+
         ellipse.bezierCurveTo(
-            x + l * (width / 2),
-            y + height / 2,
-            x + width / 2,
-            y + l * (height / 2),
-            x + width / 2,
+            x + w / 2,
+            y + l * (h / 2),
+            x + (sqrt2 / 2 + d) * (w / 2),
+            y + (sqrt2 / 2 - d) * (h / 2),
+            x + (sqrt2 / 2) * (w / 2),
+            y + (sqrt2 / 2) * (h / 2),
+        );
+
+        ellipse.bezierCurveTo(
+            x + (sqrt2 / 2 - d) * (w / 2),
+            y + (sqrt2 / 2 + d) * (h / 2),
+            x + l * (w / 2),
+            y + h / 2,
+            x,
+            y + h / 2,
+        );
+
+        ellipse.bezierCurveTo(
+            x - l * (w / 2),
+            y + h / 2,
+            x + (-sqrt2 / 2 + d) * (w / 2),
+            y + (sqrt2 / 2 + d) * (h / 2),
+            x + (-sqrt2 / 2) * (w / 2),
+            y + (sqrt2 / 2) * (h / 2),
+        );
+
+        ellipse.bezierCurveTo(
+            x + (-sqrt2 / 2 - d) * (w / 2),
+            y + (sqrt2 / 2 - d) * (h / 2),
+            x - w / 2,
+            y + l * (h / 2),
+            x - w / 2,
             y,
         );
 
         ellipse.bezierCurveTo(
-            x + width / 2,
-            y - l * (height / 2),
-            x + l * (width / 2),
-            y - height / 2,
-            x,
-            y - height / 2,
+            x - w / 2,
+            y - l * (h / 2),
+            x + (-sqrt2 / 2 - d) * (w / 2),
+            y + (-sqrt2 / 2 + d) * (h / 2),
+            x + (-sqrt2 / 2) * (w / 2),
+            y + (-sqrt2 / 2) * (h / 2),
         );
 
         ellipse.bezierCurveTo(
-            x - l * (width / 2),
-            y - height / 2,
-            x - width / 2,
-            y - l * (height / 2),
-            x - width / 2,
+            x + (-sqrt2 / 2 + d) * (w / 2),
+            y + (-sqrt2 / 2 - d) * (h / 2),
+            x - l * (w / 2),
+            y - h / 2,
+            x,
+            y - h / 2,
+        );
+
+        ellipse.bezierCurveTo(
+            x + l * (w / 2),
+            y - h / 2,
+            x + (sqrt2 / 2 - d) * (w / 2),
+            y + (-sqrt2 / 2 - d) * (h / 2),
+            x + (sqrt2 / 2) * (w / 2),
+            y + (-sqrt2 / 2) * (h / 2),
+        );
+
+        ellipse.bezierCurveTo(
+            x + (sqrt2 / 2 + d) * (w / 2),
+            y + (-sqrt2 / 2 + d) * (h / 2),
+            x + w / 2,
+            y - l * (h / 2),
+            x + w / 2,
             y,
-        );
-
-        ellipse.bezierCurveTo(
-            x - width / 2,
-            y + l * (height / 2),
-            x - l * (width / 2),
-            y + height / 2,
-            x,
-            y + height / 2,
         );
 
         this.drawPath2D(ellipse, strokeColour, strokeWidth, fillColour);
@@ -204,7 +244,7 @@ export default class Canvas {
      * @param {number} [options.strokeWidth] - The width to draw the path's outline (optional)
      * @param {Canvas.Colour} [options.fillColour] - The colour to draw the path (optional)
      */
-    path(pointList, closePath, { strokeColour = null, strokeWidth = 1, fillColour = null }) {
+    path(pointList, closePath, { strokeColour = null, strokeWidth = 1, fillColour = null } = {}) {
         // pointList should be an array of Points with at least one element
         // strokeColour and fillColour should be a Colour or null
         // strokeWidth should be a number
@@ -266,7 +306,7 @@ export default class Canvas {
         if (strokeColour) {
             this.context.strokeStyle = strokeColour.getString();
         } else {
-            this.context.strokeStyle = new Colour(255, 255, 255).getString();
+            this.context.strokeStyle = new Colour(255).getString();
         }
         this.context.lineWidth = strokeWidth;
         this.context.stroke(path);
@@ -274,7 +314,7 @@ export default class Canvas {
         if (fillColour) {
             this.context.fillStyle = fillColour.getString();
         } else {
-            this.context.fillStyle = new Colour(255, 255, 255).getString();
+            this.context.fillStyle = new Colour(255).getString();
         }
         this.context.fill(path);
     }
