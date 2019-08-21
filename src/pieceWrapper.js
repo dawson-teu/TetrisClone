@@ -53,10 +53,11 @@ export default class PieceWrapper {
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
      * @param {number} deltaTime - The difference in time between this frame and the last
+     * @param {number} lineWidth - The width of the lines between blocks
      * @param {number} lockDelayTime - The amount of time a piece should have between
      *  touching the floor and being fully locked
      */
-    draw(canvas, blockWidth, blockHeight, deltaTime, lockDelayTime) {
+    draw(canvas, blockWidth, blockHeight, lineWidth, deltaTime, lockDelayTime) {
         // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         // If the piece is not locking the animation time should be reset to 0.
@@ -74,6 +75,7 @@ export default class PieceWrapper {
             canvas,
             blockWidth,
             blockHeight,
+            lineWidth,
             lerp(255, 0, this.lockingAnimationTime / lockDelayTime),
         );
     }

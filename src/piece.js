@@ -120,15 +120,13 @@ export default class Piece {
      * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
+     * @param {number} lineWidth - The width of the lines between blocks
      * @param {number} [alpha] - The alpha value, if any, to draw the piece with
      */
-    draw(canvas, blockWidth, blockHeight, alpha) {
+    draw(canvas, blockWidth, blockHeight, lineWidth, alpha) {
         // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         // Loop through the x-values and y-values of the piece's shape
-
-        console.log(Canvas.Colour(...PieceColour[PieceType[this.type]], alpha).getString());
-
         for (let y = 0; y < this.shape.length; y += 1) {
             for (let x = 0; x < this.shape[0].length; x += 1) {
                 if (this.shape[y][x]) {
@@ -136,10 +134,10 @@ export default class Piece {
                     // draw a rectangle at this board position with the block's width and height.
                     // The piece's colour should be the colour of the piece's type
                     canvas.rect(
-                        (this.x + x) * blockWidth,
-                        (this.y + y) * blockHeight,
-                        blockWidth,
-                        blockHeight,
+                        (this.x + x) * blockWidth + lineWidth / 2,
+                        (this.y + y) * blockHeight + lineWidth / 2,
+                        blockWidth - lineWidth,
+                        blockHeight - lineWidth,
                         {
                             strokeColour: Canvas.Colour(40),
                             strokeWeight: 2,

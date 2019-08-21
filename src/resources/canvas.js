@@ -27,7 +27,7 @@ class Colour {
      */
     getString() {
         if (this.a) {
-            return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`;
+            return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a / 255})`;
         }
         return `rgb(${this.r}, ${this.g}, ${this.b})`;
     }

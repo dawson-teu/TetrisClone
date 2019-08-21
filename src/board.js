@@ -77,8 +77,9 @@ export default class Board {
      * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
+     * @param {number} lineWidth - The width of the lines between blocks
      */
-    draw(canvas, blockWidth, blockHeight) {
+    draw(canvas, blockWidth, blockHeight, lineWidth) {
         // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         const boardWidth = this.width * blockWidth;
@@ -89,15 +90,21 @@ export default class Board {
             canvas.path(
                 [Canvas.Point(0, i * blockHeight), Canvas.Point(boardWidth, i * blockHeight)],
                 false,
-                { strokeColour: Canvas.Colour(40), strokeWeight: 1 },
+                {
+                    strokeColour: Canvas.Colour(15),
+                    strokeWidth: lineWidth,
+                },
             );
         }
         // Draw the vertical board outlines
         for (let i = 1; i < this.width; i += 1) {
             canvas.path(
-                [Canvas.Point(i * blockHeight, 0), Canvas.Point(i * blockWidth, boardHeight)],
+                [Canvas.Point(i * blockHeight, 0), Canvas.Point(i * blockHeight, boardHeight)],
                 false,
-                { strokeColour: Canvas.Colour(40), strokeWeight: 1 },
+                {
+                    strokeColour: Canvas.Colour(15),
+                    strokeWidth: lineWidth,
+                },
             );
         }
         // Loop through the board data to find filled blocks and
@@ -106,9 +113,15 @@ export default class Board {
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
                 if (this.data[y][x] > 0) {
-                    canvas.rect(x * blockWidth, y * blockHeight, blockWidth, blockHeight, {
-                        fillColour: Canvas.Colour(...PieceColour[PieceType[this.data[y][x]]]),
-                    });
+                    canvas.rect(
+                        x * blockWidth + lineWidth / 2,
+                        y * blockHeight + lineWidth / 2,
+                        blockWidth - lineWidth,
+                        blockHeight - lineWidth,
+                        {
+                            fillColour: Canvas.Colour(...PieceColour[PieceType[this.data[y][x]]]),
+                        },
+                    );
                 }
             }
         }
@@ -120,9 +133,10 @@ export default class Board {
      * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
      * @param {number} blockHeight - The height of an individual block
+     * @param {number} lineWidth - The width of the lines between blocks
      * @param {Piece} piece - The piece to draw the ghost piece of
      */
-    showGhostPiece(canvas, blockWidth, blockHeight, piece) {
+    showGhostPiece(canvas, blockWidth, blockHeight, lineWidth, piece) {
         // Make a copy of the piece to perform operations on
         const pieceCopy = piece.copy();
         // Drop the piece copy until it touches the board floor. This is where
@@ -139,16 +153,30 @@ export default class Board {
                     // draw a clear rectangle with a coloured border. The border will
                     // the colour of the piece copy's type
                     canvas.rect(
-                        (pieceCopy.x + x) * blockWidth,
-                        (pieceCopy.y + y) * blockHeight,
-                        blockWidth,
-                        blockHeight,
+                        (pieceCopy.x + x) * blockWidth + lineWidth / 2,
+                        (pieceCopy.y + y) * blockHeight + lineWidth / 2,
+                        blockWidth - lineWidth,
+                        blockHeight - lineWidth,
                         {
-                            strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
-                            strokeWidth: 2,
-                            fillColour: Canvas.Colour(0, 0, 0, 0),
+                            strokeWidth: lineWidth,
+                            fillColour: Canvas.Colour(
+                                ...PieceColour[PieceType[pieceCopy.type]],
+                                60,
+                            ),
                         },
                     );
+
+                    // Uncomment this code to draw the ghost piece as an outline instead of a filled piece
+                    // canvas.rect(
+                    //     (pieceCopy.x + x) * blockWidth,
+                    //     (pieceCopy.y + y) * blockHeight,
+                    //     blockWidth,
+                    //     blockHeight,
+                    //     {
+                    //         strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
+                    //         strokeWidth: 0,
+                    //     },
+                    // );
                 }
             }
         }
