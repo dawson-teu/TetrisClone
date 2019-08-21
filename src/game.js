@@ -11,6 +11,7 @@
         - These should display score/level, next 3 pieces,
         held piece, piece statistics, instructions and player profile information
         - The website should control the behaviour of the game
+        - Keyboard event listeners should only be added to the game
         - Add start menu, game end menu, pause menu and settings menu
             - Pause menu (in another sketch) should activate on defocus
             - Settings menu should adjust things like sound volume, controls
