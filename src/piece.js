@@ -126,6 +126,9 @@ export default class Piece {
         // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
         // Loop through the x-values and y-values of the piece's shape
+
+        console.log(Canvas.Colour(...PieceColour[PieceType[this.type]], alpha).getString());
+
         for (let y = 0; y < this.shape.length; y += 1) {
             for (let x = 0; x < this.shape[0].length; x += 1) {
                 if (this.shape[y][x]) {
@@ -138,7 +141,7 @@ export default class Piece {
                         blockWidth,
                         blockHeight,
                         {
-                            strokeColour: Canvas.Colour(40, 40, 40),
+                            strokeColour: Canvas.Colour(40),
                             strokeWeight: 2,
                             fillColour: Canvas.Colour(...PieceColour[PieceType[this.type]], alpha),
                         },

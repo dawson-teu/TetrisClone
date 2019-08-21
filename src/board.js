@@ -89,7 +89,7 @@ export default class Board {
             canvas.path(
                 [Canvas.Point(0, i * blockHeight), Canvas.Point(boardWidth, i * blockHeight)],
                 false,
-                { strokeColour: Canvas.Colour(40, 40, 40), strokeWeight: 1 },
+                { strokeColour: Canvas.Colour(40), strokeWeight: 1 },
             );
         }
         // Draw the vertical board outlines
@@ -97,7 +97,7 @@ export default class Board {
             canvas.path(
                 [Canvas.Point(i * blockHeight, 0), Canvas.Point(i * blockWidth, boardHeight)],
                 false,
-                { strokeColour: Canvas.Colour(40, 40, 40), strokeWeight: 1 },
+                { strokeColour: Canvas.Colour(40), strokeWeight: 1 },
             );
         }
         // Loop through the board data to find filled blocks and
