@@ -36,7 +36,7 @@ export default class PieceWrapper {
     createNewPiece(type) {
         // type should be a member of the PieceType enum
         // Find the width of the current piece
-        const pieceWidth = PieceShape[PieceType[type]][0].length;
+        const pieceWidth = Math.sqrt(PieceShape[PieceType[type]].length);
         // The piece should start in the middle of the board, and if there is none, prefer the left middle.
         // The board width divided by 2 minus the piece width divided by 2 which is equivalent to
         // the code below, will give the correct middle-aligned starting position for the piece.

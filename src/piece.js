@@ -4,6 +4,10 @@ import {
     Direction,
     PieceShape,
     rotate2Darray,
+    newArray,
+    convert1DindexTo2D,
+    convert2DarrayTo1D,
+    convert1DarrayTo2D,
 } from './resources/utility.js';
 import Canvas from './resources/canvas.js';
 
@@ -56,7 +60,7 @@ export default class Piece {
 
     /**
      * Get the piece's shape
-     * @returns {number[][]} - The shape
+     * @returns {number[]} - The shape
      */
     getShape() {
         return this.shape;
@@ -80,19 +84,16 @@ export default class Piece {
      */
     isTouchingBoardFloor(board) {
         // board should be a Board
-        // Loop through the x-values and y-values of the piece's shape
-        for (let y = 0; y < this.shape.length; y += 1) {
-            for (let x = 0; x < this.shape[0].length; x += 1) {
-                // If the shape has an active block at this local position
-                // and the board position below this one is active,
-                // the piece is touching the board floor
-                if (this.shape[y][x] === 1 && board.getData(this.x + x, this.y + y + 1) > 0) {
-                    return true;
-                }
+        // Loop through the piece's shape
+        for (let i = 0; i < this.shape.length; i += 1) {
+            // If the shape has an active block at this local position
+            // and the board position below this one is active,
+            // the piece is touching the board floor
+            const { x, y } = convert1DindexTo2D(i, Math.sqrt(this.shape.length));
+            if (this.shape[i] && board.getData(this.x + x, this.y + y + 1) > 0) {
+                return true;
             }
         }
-        // If none of the piece shape's active blocks have board blocks below them,
-        // the piece is not touching the board floor
         return false;
     }
 
@@ -101,15 +102,11 @@ export default class Piece {
      * @param {Board} board - The board to check collisions against
      */
     isIntersectingBoardCeiling(board) {
-        // Loop through the x-values and y-values of the piece's shape
-        for (let y = 0; y < this.shape.length; y += 1) {
-            for (let x = 0; x < this.shape[0].length; x += 1) {
-                // If the shape has an active block at this local position
-                // and the board has an active block at this board position,
-                // the piece is intersecting the board ceiling
-                if (this.shape[y][x] === 1 && board.getData(this.x + x, this.y + y) > 0) {
-                    return true;
-                }
+        // Loop through the piece's shape
+        for (let i = 0; i < this.shape.length; i += 1) {
+            const { x, y } = convert1DindexTo2D(i, Math.sqrt(this.shape.length));
+            if (this.shape[i] && board.getData(this.x + x, this.y + y) > 0) {
+                return true;
             }
         }
         return false;
@@ -126,25 +123,24 @@ export default class Piece {
     draw(canvas, blockWidth, blockHeight, lineWidth, alpha) {
         // canvas should be a Canvas
         // blockWidth and blockHeight should be numbers > 0
-        // Loop through the x-values and y-values of the piece's shape
-        for (let y = 0; y < this.shape.length; y += 1) {
-            for (let x = 0; x < this.shape[0].length; x += 1) {
-                if (this.shape[y][x]) {
-                    // If the shape has an active block at this local position
-                    // draw a rectangle at this board position with the block's width and height.
-                    // The piece's colour should be the colour of the piece's type
-                    canvas.rect(
-                        (this.x + x) * blockWidth + lineWidth / 2,
-                        (this.y + y) * blockHeight + lineWidth / 2,
-                        blockWidth - lineWidth,
-                        blockHeight - lineWidth,
-                        {
-                            strokeColour: Canvas.Colour(40),
-                            strokeWeight: 2,
-                            fillColour: Canvas.Colour(...PieceColour[PieceType[this.type]], alpha),
-                        },
-                    );
-                }
+        // Loop through the piece's shape
+        for (let i = 0; i < this.shape.length; i += 1) {
+            if (this.shape[i]) {
+                // If the shape has an active block at this local position
+                // draw a rectangle at this board position with the block's width and height.
+                // The piece's colour should be the colour of the piece's type
+                const { x, y } = convert1DindexTo2D(i, Math.sqrt(this.shape.length));
+                canvas.rect(
+                    (this.x + x) * blockWidth + lineWidth / 2,
+                    (this.y + y) * blockHeight + lineWidth / 2,
+                    blockWidth - lineWidth,
+                    blockHeight - lineWidth,
+                    {
+                        strokeColour: Canvas.Colour(40),
+                        strokeWeight: 2,
+                        fillColour: Canvas.Colour(...PieceColour[PieceType[this.type]], alpha),
+                    },
+                );
             }
         }
     }
@@ -186,7 +182,9 @@ export default class Piece {
         for (const value of tests) {
             // Move the piece to the position and rotate the piece
             this.x += value;
-            this.shape = rotate2Darray(this.shape);
+            this.shape = convert2DarrayTo1D(
+                rotate2Darray(convert1DarrayTo2D(this.shape, Math.sqrt(this.shape.length))),
+            );
 
             // If the piece is colliding with the board, the rotation failed
             if (this.isIntersectingBoardWalls(board)) {
@@ -238,15 +236,16 @@ export default class Piece {
     pieceLeftSide() {
         // Initialize the piece's left side with -1. This value represents no block
         // being found in a certain row
-        const leftSide = Array.from({ length: this.shape.length }, () => -1);
+        const leftSide = newArray(this.shape.length, -1);
 
-        // Loop through the board's rows
-        for (let y = 0; y < this.shape.length; y += 1) {
+        // Loop through the x and y-values of the 2D array version of the piece's shape
+        const shape2d = convert1DarrayTo2D(this.shape, Math.sqrt(this.shape.length));
+        for (let y = 0; y < shape2d.length; y += 1) {
             // Loop through the row, from left to right
-            for (let x = 0; x < this.shape[0].length; x += 1) {
+            for (let x = 0; x < shape2d[0].length; x += 1) {
                 // If an active block is found in the row, add it to the array
                 // and stop checking this row. This will find the leftmost active block
-                if (this.shape[y][x] > 0) {
+                if (shape2d[y][x] > 0) {
                     leftSide[y] = x;
                     break;
                 }
@@ -264,15 +263,16 @@ export default class Piece {
     pieceRightSide() {
         // Initialize the piece's right side with -1. This value represents no block
         // being found in a certain row
-        const rightSide = Array.from({ length: this.shape.length }, () => -1);
+        const rightSide = newArray(this.shape.length, -1);
 
-        // Loop through the board's rows
-        for (let y = 0; y < this.shape.length; y += 1) {
+        // Loop through the x and y-values of the 2D array version of the piece's shape
+        const shape2d = convert1DarrayTo2D(this.shape, Math.sqrt(this.shape.length));
+        for (let y = 0; y < shape2d.length; y += 1) {
             // Loop through the row, from right to left
-            for (let x = this.shape[0].length - 1; x >= 0; x -= 1) {
+            for (let x = shape2d[0].length - 1; x >= 0; x -= 1) {
                 // If an active block is found in the row, add it to the array
                 // and stop checking this row. This will find the rightmost active block
-                if (this.shape[y][x] > 0) {
+                if (shape2d[y][x] > 0) {
                     rightSide[y] = x;
                     break;
                 }

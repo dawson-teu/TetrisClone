@@ -64,7 +64,7 @@ class Point {
 
     /**
      * Return an object with the x-value and y-value
-     * @returns {object} {{x: the x-value, y: the y-value}}
+     * @returns {object} {x: the x-value, y: the y-value}
      */
     getPoints() {
         return { x: this.x, y: this.y };
