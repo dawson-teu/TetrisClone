@@ -25,13 +25,13 @@ export const PieceColour = {
 };
 
 export const PieceShape = {
-    I: [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
-    J: [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
-    L: [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
-    O: [[1, 1], [1, 1]],
-    S: [[0, 1, 1], [1, 1, 0], [0, 0, 0]],
-    T: [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
-    Z: [[1, 1, 0], [0, 1, 1], [0, 0, 0]],
+    I: [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    J: [1, 0, 0, 1, 1, 1, 0, 0, 0],
+    L: [0, 0, 1, 1, 1, 1, 0, 0, 0],
+    O: [1, 1, 1, 1],
+    S: [0, 1, 1, 1, 1, 0, 0, 0, 0],
+    T: [0, 1, 0, 1, 1, 1, 0, 0, 0],
+    Z: [1, 1, 0, 0, 1, 1, 0, 0, 0],
 };
 
 export const PieceMoveState = {
@@ -59,38 +59,84 @@ export const Direction = {
 };
 
 /**
- * Return a two-dimensional array of a specified size and filled with a specified value
- * @param {number} row - The number of rows of the array
- * @param {number} col - The number of cols of the array
- * @param {*} value - The value to fill the array with
- * @returns {*[][]} - The new two-dimensional array
+ * Return a new array with a specified length and filled with a specified value
+ * @param {number} length - The length of the new array
+ * @param {number} value - The value to fill the new array with
+ * @returns {number[]} - The new array
  */
-export function new2Darray(row, col, value = 0) {
-    // row and col should be numbers > 0
-    // Loop for the number of rows
+export const newArray = (length, value = 0) => {
     const array = [];
-    for (let i = 0; i < row; i += 1) {
-        // For each row loop for the number of cols
-        const newRow = [];
-        for (let j = 0; j < col; j += 1) {
-            newRow.push(value);
-        }
-        // Push an array of the col size filled with the value specified
-        array.push(newRow);
+    for (let i = 0; i < length; i += 1) {
+        array.push(value);
     }
     return array;
-}
+};
+
+/**
+ * Given a two-dimensional index and the width of the two-dimensional array,
+ * return the corresponding one-dimensional index
+ * @param {number} x - The x-value of the two-dimensional index
+ * @param {number} y - The y-value of the two-dimensional index
+ * @param {number} w - The width of the two-dimensional array
+ * @returns {number} - The one-dimensional index
+ */
+export const convert2DindexTo1D = (x, y, w) => {
+    return x + w * y;
+};
+
+/**
+ * Given a one-dimensional index and the width of the two-dimensional array,
+ * return the corresponding two-dimensional index
+ * @param {*} index - The one-dimensional index
+ * @param {*} w - The width of the two-dimensional array
+ * @returns {object} {x: The x-value of the two-dimensional index,
+ *  y: The y-value of the two-dimensional index}
+ */
+export const convert1DindexTo2D = (index, w) => {
+    return { x: index % w, y: Math.floor(index / w) };
+};
+
+/**
+ * Given a two-dimensional array, return the corresponding one-dimensional array
+ * @param {number[][]} array - The two-dimensional array to convert
+ * @returns {number[]} - The converted one-dimensional array
+ */
+export const convert2DarrayTo1D = array => {
+    return array.flat();
+};
+
+/**
+ * Given a one-dimensional array and the width of the two-dimensional array,
+ * return the corresponding two-dimensional array
+ * @param {number[]} array - The one-dimensional array to convert
+ * @param {number} w - The width of the two-dimensional array
+ * @returns {number[][]} - The converted two-dimensional array
+ */
+export const convert1DarrayTo2D = (array, w) => {
+    const array2D = [];
+    for (let i = 0; i < Math.floor(array.length / w); i += 1) {
+        const row = [];
+        for (let j = 0; j < w; j += 1) {
+            row.push(array[convert2DindexTo1D(j, i, w)]);
+        }
+        array2D.push(row);
+    }
+    return array2D;
+};
 
 /**
  * Returns a two-dimensional array rotated 90 degrees clockwise
- * @param {*[][]} array - The array to rotate
- * @returns {*[][]} - The rotated array
+ * @param {number[][]} array - The array to rotate
+ * @returns {number[][]} - The rotated array
  */
-export function rotate2Darray(array) {
+export const rotate2Darray = array => {
     // array.width == array.height should be true
     // Create a empty array with the original array's width and height
     // to hold the rotated array
-    const rotatedArray = new2Darray(array.length, array[0].length);
+    const rotatedArray = convert1DarrayTo2D(
+        newArray(array.length * array[0].length),
+        array[0].length,
+    );
     // Loop over the indices of the original array
     for (let y = 0; y < array.length; y += 1) {
         for (let x = 0; x < array[0].length; x += 1) {
@@ -111,7 +157,7 @@ export function rotate2Darray(array) {
         }
     }
     return rotatedArray;
-}
+};
 
 /**
  * Return a random number within a certain range (inclusive)
@@ -119,12 +165,12 @@ export function rotate2Darray(array) {
  * @param {number} b - The upper bound of the range
  * @returns {number} - The random number
  */
-export function randomRange(a, b) {
+export const randomRange = (a, b) => {
     // a and b should be numbers and b > a should be true
     // Math.random returns a value between 0 and 1.
     // This value is then mapped between a and b and floored to an integer
     return Math.floor(Math.random() * (b - a + 1)) + a;
-}
+};
 
 /**
  * Return a shuffled version of an array. Shuffled means that the elements of
@@ -132,7 +178,7 @@ export function randomRange(a, b) {
  * @param {*[]} array - The array to shuffle
  * @returns {*[]} - The shuffled array
  */
-export function shuffleArray(array) {
+export const shuffleArray = array => {
     // Create a copy of the original array and an array
     // to hold the result of the shuffling
     const originalArray = [...array];
@@ -152,7 +198,7 @@ export function shuffleArray(array) {
     }
 
     return shuffledArray;
-}
+};
 
 /**
  * Linearly interpolate between two values, given a time between 0 and 1
@@ -161,6 +207,6 @@ export function shuffleArray(array) {
  * @param {number} time - The time with which to interpolate
  * @returns {number} - The interpolated value
  */
-export function lerp(a, b, time) {
+export const lerp = (a, b, time) => {
     return (1 - time) * a + time * b;
-}
+};

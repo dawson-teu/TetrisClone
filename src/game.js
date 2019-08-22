@@ -100,21 +100,21 @@ let lastFrameTime;
  * @param {'drop' | 'move' | 'lock'} [key] - The parameter of the state to return
  * @returns {PieceDropState | PieceMoveState | PieceLockState} - The parameter of the state specified
  */
-function getPieceState(key = 'all') {
+const getPieceState = (key = 'all') => {
     // key should be either 'all', 'drop', 'move', or 'lock'
     const lowerCaseKey = key.toLocaleLowerCase();
     if (lowerCaseKey === 'all') {
         return pieceState;
     }
     return pieceState[lowerCaseKey];
-}
+};
 
 /**
  * Set one parameter of the piece's state
  * @param {'drop' | 'move' | 'lock'} key - The parameter of the state to set
  * @param {PieceDropState | PieceMoveState | PieceLockState} value - The value to set the state to
  */
-function setPieceState(key, value) {
+const setPieceState = (key, value) => {
     // key should be either 'drop', 'move', or 'lock'
     // value should be a member of PieceDropState, PieceMoveState or PieceLockState
     const lowerCaseKey = key.toLocaleLowerCase();
@@ -132,12 +132,12 @@ function setPieceState(key, value) {
 
     // if stateValue is undefined, the function should return
     pieceState[lowerCaseKey] = stateValue;
-}
+};
 
 /**
  * The callback function for the game is restarted
  */
-function restartGame() {
+const restartGame = () => {
     // Clear the board and create a new piece
     board.reset();
 
@@ -153,14 +153,14 @@ function restartGame() {
     setPieceState('drop', 'AUTO');
     setPieceState('move', 'NONE');
     setPieceState('lock', 'MOVING');
-}
+};
 
 /**
  * The callback function for when a new piece is created
  * @param {bool} lockImmediately - Whether the piece should be locked immediately,
  *  or after the lock delay. This is useful to lock hard drops immediately
  */
-function onNewPiece(lockImmediately) {
+const onNewPiece = lockImmediately => {
     // Set the old piece to locking
     setPieceState('lock', 'LOCKING');
 
@@ -191,7 +191,7 @@ function onNewPiece(lockImmediately) {
     } else {
         setTimeout(lockPiece, lockDelayTime);
     }
-}
+};
 
 // Set the context for the event handlers
 const context = {

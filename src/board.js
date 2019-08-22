@@ -1,4 +1,10 @@
-import { new2Darray, PieceColour, PieceType } from './resources/utility.js';
+import {
+    newArray,
+    PieceColour,
+    PieceType,
+    convert2DindexTo1D,
+    convert1DindexTo2D,
+} from './resources/utility.js';
 import Canvas from './resources/canvas.js';
 
 export default class Board {
@@ -12,7 +18,7 @@ export default class Board {
         // gridWidth and gridHeight should be numbers > 0
         this.width = gridWidth;
         this.height = gridHeight;
-        this.data = new2Darray(gridHeight, gridWidth);
+        this.data = newArray(gridWidth * gridHeight);
     }
 
     /**
@@ -34,7 +40,7 @@ export default class Board {
             return 0;
         }
         // Otherwise, return the data at the x-values and y-values
-        return this.data[y][x];
+        return this.data[convert2DindexTo1D(x, y, this.width)];
     }
 
     /**
@@ -50,7 +56,7 @@ export default class Board {
         if (x >= this.width || x < 0 || y >= this.height || y < 0) {
             return;
         }
-        this.data[y][x] = value;
+        this.data[convert2DindexTo1D(x, y, this.width)] = value;
     }
 
     /**
@@ -59,15 +65,14 @@ export default class Board {
      */
     add(piece) {
         // piece should be a Piece
-        // Loop through the x-values and y-values of the added piece's shape
-        for (let y = 0; y < piece.getShape().length; y += 1) {
-            for (let x = 0; x < piece.getShape()[0].length; x += 1) {
-                if (piece.getShape()[y][x] > 0) {
-                    // If the piece has an active block at this local position,
-                    // add this block to the board by setting the board data at this board position
-                    // to the piece's type
-                    this.setData(piece.getX() + x, piece.getY() + y, piece.type);
-                }
+        // Loop through the added piece's shape
+        for (let i = 0; i < piece.getShape().length; i += 1) {
+            if (piece.getShape()[i] > 0) {
+                // If the piece has an active block at this local position,
+                // add this block to the board by setting the board data at this board position
+                // to the piece's type
+                const { x, y } = convert1DindexTo2D(i, Math.sqrt(piece.getShape().length));
+                this.setData(piece.getX() + x, piece.getY() + y, piece.type);
             }
         }
     }
@@ -107,28 +112,27 @@ export default class Board {
                 },
             );
         }
-        // Loop through the board data to find filled blocks and
-        // draw the filled blocks as rectangles with the colour
-        // of the piece represented by the data at the position
-        for (let y = 0; y < this.height; y += 1) {
-            for (let x = 0; x < this.width; x += 1) {
-                if (this.data[y][x] > 0) {
-                    canvas.rect(
-                        x * blockWidth + lineWidth / 2,
-                        y * blockHeight + lineWidth / 2,
-                        blockWidth - lineWidth,
-                        blockHeight - lineWidth,
-                        {
-                            fillColour: Canvas.Colour(...PieceColour[PieceType[this.data[y][x]]]),
-                        },
-                    );
-                }
+
+        // Loop through the board's data, drawing the filled blocks as
+        // rectangles with the colour of the piece represented by the data at the position
+        for (let i = 0; i < this.data.length; i += 1) {
+            if (this.data[i] > 0) {
+                const { x, y } = convert1DindexTo2D(i, this.width);
+                canvas.rect(
+                    x * blockWidth + lineWidth / 2,
+                    y * blockHeight + lineWidth / 2,
+                    blockWidth - lineWidth,
+                    blockHeight - lineWidth,
+                    {
+                        fillColour: Canvas.Colour(...PieceColour[PieceType[this.data[i]]]),
+                    },
+                );
             }
         }
     }
 
     /**
-     * Show a piece-coloured outline of the ghost piece on the board.
+     * Show a piece-coloured representation of the ghost piece on the board.
      * The ghost piece represents where the piece will land after dropping
      * @param {Canvas} canvas - The canvas to draw the board to
      * @param {number} blockWidth - The width of an individual block
@@ -145,39 +149,35 @@ export default class Board {
             pieceCopy.drop();
         }
 
-        // Loop through the x-values and y-values of the piece copy's shape
-        for (let y = 0; y < pieceCopy.getShape().length; y += 1) {
-            for (let x = 0; x < pieceCopy.getShape()[0].length; x += 1) {
-                if (pieceCopy.getShape()[y][x] > 0) {
-                    // If the piece copy has an active block at this local position,
-                    // draw a clear rectangle with a coloured border. The border will
-                    // the colour of the piece copy's type
-                    canvas.rect(
-                        (pieceCopy.x + x) * blockWidth + lineWidth / 2,
-                        (pieceCopy.y + y) * blockHeight + lineWidth / 2,
-                        blockWidth - lineWidth,
-                        blockHeight - lineWidth,
-                        {
-                            strokeWidth: lineWidth,
-                            fillColour: Canvas.Colour(
-                                ...PieceColour[PieceType[pieceCopy.type]],
-                                60,
-                            ),
-                        },
-                    );
+        // Loop through the piece copy's shape
+        for (let i = 0; i < pieceCopy.getShape().length; i += 1) {
+            if (pieceCopy.getShape()[i] > 0) {
+                // If the piece copy has an active block at this local position,
+                // draw a filled rectangle with a coloured fill. The colour will be
+                // the colour of the type of the piece
+                const { x, y } = convert1DindexTo2D(i, Math.sqrt(pieceCopy.getShape().length));
+                canvas.rect(
+                    (pieceCopy.x + x) * blockWidth + lineWidth / 2,
+                    (pieceCopy.y + y) * blockHeight + lineWidth / 2,
+                    blockWidth - lineWidth,
+                    blockHeight - lineWidth,
+                    {
+                        strokeWidth: lineWidth,
+                        fillColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]], 60),
+                    },
+                );
 
-                    // Uncomment this code to draw the ghost piece as an outline instead of a filled piece
-                    // canvas.rect(
-                    //     (pieceCopy.x + x) * blockWidth,
-                    //     (pieceCopy.y + y) * blockHeight,
-                    //     blockWidth,
-                    //     blockHeight,
-                    //     {
-                    //         strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
-                    //         strokeWidth: 0,
-                    //     },
-                    // );
-                }
+                // Uncomment this code to draw the ghost piece as an outline instead of a filled piece
+                // canvas.rect(
+                //     (pieceCopy.x + x) * blockWidth,
+                //     (pieceCopy.y + y) * blockHeight,
+                //     blockWidth,
+                //     blockHeight,
+                //     {
+                //         strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
+                //         strokeWidth: 0,
+                //     },
+                // );
             }
         }
     }
@@ -187,15 +187,19 @@ export default class Board {
      * Any empty lines after this process are filled with zeros to maintain the board height
      */
     clearFilledLines() {
-        // Loop through the board's rows
-        for (let y = 0; y < this.height; y += 1) {
-            // If the row is all zeros, remove the row
-            if (this.data[y].filter(value => value > 0).length === this.width) {
-                // To remove the row, first splice out the array at the row's index.
-                // Second, add an row of zeros at the beginning of the array.
-                // The row is now removed and the board's dimensions are still the same
-                this.data.splice(y, 1);
-                this.data.unshift(Array(this.width).fill(0));
+        // Loop through the board's data, assigning the sum of each row to a new array
+        // If the board's data has an active block, the value will be 1 and if not, 0
+        const rowSum = newArray(this.height);
+        for (let i = 0; i < this.data.length; i += 1) {
+            const { y } = convert1DindexTo2D(i, this.width);
+            rowSum[y] += this.data[i] > 0;
+        }
+        // If the sum of a row is equal to the width of the board, it must be
+        // completely filled. This means it should be removed
+        for (let i = 0; i < rowSum.length; i += 1) {
+            if (rowSum[i] === this.width) {
+                this.data.splice(i * this.width, this.width);
+                this.data.unshift(...newArray(this.width));
             }
         }
     }
@@ -204,6 +208,6 @@ export default class Board {
      * Reset the board data to all zeros (calling this function is equivalent to calling the constructor)
      */
     reset() {
-        this.data = new2Darray(this.height, this.width);
+        this.data = newArray(this.width * this.height);
     }
 }
