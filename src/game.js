@@ -27,7 +27,6 @@
             only when the timer exceeds the delay
 
     Think about? (after implementing features)
-        - Remove p5.js and draw using vanilla canvas for faster load times
         - Add RxJs Observables instead of default keyboard event listeners
         - Adding lazy loading
             - https://webpack.js.org/guides/code-splitting/
@@ -55,6 +54,7 @@ import {
     PieceLockState,
     PieceType,
     shuffleArray,
+    PieceColour,
 } from './resources/utility.js';
 import * as handlers from './eventHandlers.js';
 
@@ -223,6 +223,14 @@ setInterval(handlers.onAutoDrop.bind(context), autoDropTime);
 // Update the last frame time
 lastFrameTime = Date.now();
 
+const hexToDec = value => {
+    let total = 0;
+    for (let i = 0; i < value.length; i += 1) {
+        total += parseInt(value[i], 16) ** (value.length - i);
+    }
+    return total;
+};
+
 const draw = () => {
     // Clear the screen and set the colour to black
     canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: Canvas.Colour(0, 0, 0) });
@@ -248,6 +256,12 @@ const draw = () => {
 
     // Update the last frame time
     lastFrameTime = Date.now();
+
+    PieceColour.Z = document
+        .getElementById('colorPicker')
+        .value.match(/#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i)
+        .slice(1)
+        .map(value => hexToDec(value));
 
     // Continue the game loop by drawing the next frame
     window.requestAnimationFrame(draw);

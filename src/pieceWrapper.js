@@ -43,7 +43,7 @@ export default class PieceWrapper {
         // Flooring the result will make it prefer the left middle if there is no middle.
         const startX = Math.floor((this.width - pieceWidth) / 2);
         // Create and assign the new piece
-        this.currentPiece = new Piece(type, this.width, this.height, startX, 0);
+        this.currentPiece = new Piece(PieceType.Z, this.width, this.height, startX, 0);
     }
 
     /**
