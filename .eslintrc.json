@@ -1,5 +1,5 @@
 {
-    "extends": ["airbnb-base", "p5js", "plugin:prettier/recommended", "prettier"],
+    "extends": ["airbnb-base", "plugin:prettier/recommended", "prettier"],
     "plugins": ["prettier"],
     "rules": {
         "linebreak-style": "off",
