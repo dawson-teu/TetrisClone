@@ -1,14 +1,17 @@
 {
-    "extends": ["airbnb-base", "plugin:prettier/recommended", "prettier"],
-    "plugins": ["prettier"],
+    "extends": ["airbnb-base", "plugin:import/errors", "plugin:import/warnings", "plugin:prettier/recommended", "prettier"],
+    "plugins": ["import", "prettier"],
     "rules": {
         "linebreak-style": "off",
-        "import/extensions": "ignorePackages",
+        "import/extensions": ["error", "always", {
+            "ignorePackages": true
+        }],
         "no-unused-vars": "warn",
         "no-restricted-syntax": "off",
         "no-console": ["warn", {
             "allow": ["warn", "error"]
-        }]
+        }],
+        "max-classes-per-file": ["error", 5]
     },
     "settings": {
         "import/resolver": {
