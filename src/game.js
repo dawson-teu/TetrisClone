@@ -1,8 +1,6 @@
 /* TODO
     Refactoring
         - Tweak values for piece speeds
-        - Tweak drawing parameters to improve the overall look and feel
-            - i.e. piece colours
         - Map out function call chain to make the order of call execution more clear
             - This should help during debugging
 
