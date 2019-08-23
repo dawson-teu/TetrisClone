@@ -1,6 +1,5 @@
 /* TODO
     Refactoring
-        - Tweak values for piece speeds
         - Map out function call chain to make the order of call execution more clear
             - This should help during debugging
 
@@ -68,7 +67,7 @@ const autoDropTime = 500;
 const softDropTime = 100;
 
 const horizontalMoveTime = 75;
-const horizontalBlockingTime = 125;
+const horizontalBlockingTime = 150;
 
 const lockDelayTime = 500;
 
