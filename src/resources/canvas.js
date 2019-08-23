@@ -305,17 +305,13 @@ export default class Canvas {
         // strokeWidth should be a number
         if (strokeColour) {
             this.context.strokeStyle = strokeColour.getString();
-        } else {
-            this.context.strokeStyle = new Colour(255).getString();
+            this.context.lineWidth = strokeWidth;
+            this.context.stroke(path);
         }
-        this.context.lineWidth = strokeWidth;
-        this.context.stroke(path);
 
         if (fillColour) {
             this.context.fillStyle = fillColour.getString();
-        } else {
-            this.context.fillStyle = new Colour(255).getString();
+            this.context.fill(path);
         }
-        this.context.fill(path);
     }
 }

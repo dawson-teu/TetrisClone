@@ -163,19 +163,20 @@ export default class Board {
                     blockHeight - lineWidth,
                     {
                         strokeWidth: lineWidth,
-                        fillColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]], 60),
+                        fillColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]], 80),
                     },
                 );
 
                 // Uncomment this code to draw the ghost piece as an outline instead of a filled piece
+                // const outlineWidth = blockWidth / 10;
                 // canvas.rect(
-                //     (pieceCopy.x + x) * blockWidth,
-                //     (pieceCopy.y + y) * blockHeight,
-                //     blockWidth,
-                //     blockHeight,
+                //     (pieceCopy.x + x) * blockWidth + lineWidth / 2 + outlineWidth / 2,
+                //     (pieceCopy.y + y) * blockHeight + lineWidth / 2 + outlineWidth / 2,
+                //     blockWidth - lineWidth - outlineWidth,
+                //     blockHeight - lineWidth - outlineWidth,
                 //     {
                 //         strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
-                //         strokeWidth: 0,
+                //         strokeWidth: outlineWidth,
                 //     },
                 // );
             }
