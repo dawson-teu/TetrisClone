@@ -8,7 +8,7 @@ import {
     convert2DarrayTo1D,
     convert1DarrayTo2D,
 } from './resources/utility.ts';
-import Canvas from './resources/canvas.js';
+import { CanvasColour } from './resources/canvas.ts';
 
 export default class Piece {
     /**
@@ -135,9 +135,9 @@ export default class Piece {
                     blockWidth - lineWidth,
                     blockHeight - lineWidth,
                     {
-                        strokeColour: Canvas.Colour(40),
+                        strokeColour: new CanvasColour(40),
                         strokeWeight: 2,
-                        fillColour: Canvas.Colour(...PieceColour[this.type], alpha),
+                        fillColour: new CanvasColour(...PieceColour[this.type], alpha),
                     },
                 );
             }

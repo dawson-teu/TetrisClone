@@ -20,7 +20,10 @@
         "no-console": ["warn", {
             "allow": ["warn", "error"]
         }],
-        "max-classes-per-file": ["error", 5]
+        "max-classes-per-file": ["error", 5],
+        "lines-between-class-members": ["error", "always", {
+            "exceptAfterSingleLine": true
+        }]
     },
     "overrides": [{
         "files": ["**/**.js"],

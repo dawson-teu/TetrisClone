@@ -4,7 +4,7 @@ import {
     convert2DindexTo1D,
     convert1DindexTo2D,
 } from './resources/utility.ts';
-import Canvas from './resources/canvas.js';
+import { CanvasColour, CanvasPoint } from './resources/canvas.ts';
 
 export default class Board {
     /**
@@ -92,10 +92,10 @@ export default class Board {
         // Draw the horizontal board outlines
         for (let i = 1; i < this.height; i += 1) {
             canvas.path(
-                [Canvas.Point(0, i * blockHeight), Canvas.Point(boardWidth, i * blockHeight)],
+                [new CanvasPoint(0, i * blockHeight), new CanvasPoint(boardWidth, i * blockHeight)],
                 false,
                 {
-                    strokeColour: Canvas.Colour(15),
+                    strokeColour: new CanvasColour(15),
                     strokeWidth: lineWidth,
                 },
             );
@@ -103,10 +103,13 @@ export default class Board {
         // Draw the vertical board outlines
         for (let i = 1; i < this.width; i += 1) {
             canvas.path(
-                [Canvas.Point(i * blockHeight, 0), Canvas.Point(i * blockHeight, boardHeight)],
+                [
+                    new CanvasPoint(i * blockHeight, 0),
+                    new CanvasPoint(i * blockHeight, boardHeight),
+                ],
                 false,
                 {
-                    strokeColour: Canvas.Colour(15),
+                    strokeColour: new CanvasColour(15),
                     strokeWidth: lineWidth,
                 },
             );
@@ -123,7 +126,7 @@ export default class Board {
                     blockWidth - lineWidth,
                     blockHeight - lineWidth,
                     {
-                        fillColour: Canvas.Colour(...PieceColour[this.data[i]]),
+                        fillColour: new CanvasColour(...PieceColour[this.data[i]]),
                     },
                 );
             }
@@ -162,7 +165,7 @@ export default class Board {
                     blockHeight - lineWidth,
                     {
                         strokeWidth: lineWidth,
-                        fillColour: Canvas.Colour(...PieceColour[pieceCopy.type], 80),
+                        fillColour: new CanvasColour(...PieceColour[pieceCopy.type], 80),
                     },
                 );
 
@@ -174,7 +177,7 @@ export default class Board {
                 //     blockWidth - lineWidth - outlineWidth,
                 //     blockHeight - lineWidth - outlineWidth,
                 //     {
-                //         strokeColour: Canvas.Colour(...PieceColour[pieceCopy.type]),
+                //         strokeColour: new CanvasColour(...PieceColour[pieceCopy.type]),
                 //         strokeWidth: outlineWidth,
                 //     },
                 // );

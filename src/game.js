@@ -42,7 +42,7 @@
             - https://socket.io/
 */
 
-import Canvas from './resources/canvas.js';
+import Canvas, { CanvasColour } from './resources/canvas.ts';
 import Board from './board.js';
 import PieceWrapper from './pieceWrapper.js';
 import {
@@ -243,7 +243,7 @@ lastFrameTime = Date.now();
 
 const draw = () => {
     // Clear the screen and set the colour to black
-    canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: Canvas.Colour(0) });
+    canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: new CanvasColour(0) });
 
     board.clearFilledLines();
     board.draw(canvas, blockWidth, blockHeight, lineWidth);
