@@ -1,6 +1,15 @@
 {
-    "extends": ["airbnb-base", "plugin:import/errors", "plugin:import/warnings", "plugin:prettier/recommended", "prettier"],
-    "plugins": ["import", "prettier"],
+    "extends": ["airbnb-base", "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended", "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:import/errors", "plugin:import/warnings",
+        "plugin:prettier/recommended", "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.eslint.json",
+        "createDefaultProgram": true
+    },
+    "plugins": ["@typescript-eslint", "import", "prettier"],
     "rules": {
         "linebreak-style": "off",
         "import/extensions": ["error", "always", {
@@ -13,6 +22,13 @@
         }],
         "max-classes-per-file": ["error", 5]
     },
+    "overrides": [{
+        "files": ["**/**.js"],
+        "rules": {
+            "@typescript-eslint/explicit-function-return-type": "off"
+        }
+
+    }],
     "settings": {
         "import/resolver": {
             "webpack": {

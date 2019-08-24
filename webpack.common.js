@@ -8,10 +8,20 @@ module.exports = {
         path: path.resolve(__dirname, 'build'),
         filename: 'bundle.js',
     },
+    resolve: {
+        extensions: [".ts", ".tsx", ".js", ".jsx"]
+      },
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.tsx?$/,
+                include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'webpack.*')],
+                use: {
+                    loader: 'ts-loader'
+                }
+            },
+            {
+                test: /\.jsx?$/,
                 include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'webpack.*')],
                 use: {
                     loader: 'babel-loader',
