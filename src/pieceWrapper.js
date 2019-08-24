@@ -1,5 +1,5 @@
 import Piece from './piece.js';
-import { PieceType, PieceShape, PieceLockState, lerp } from './resources/utility.js';
+import { PieceShape, PieceLockState, lerp } from './resources/utility.ts';
 
 export default class PieceWrapper {
     /**
@@ -36,7 +36,7 @@ export default class PieceWrapper {
     createNewPiece(type) {
         // type should be a member of the PieceType enum
         // Find the width of the current piece
-        const pieceWidth = Math.sqrt(PieceShape[PieceType[type]].length);
+        const pieceWidth = Math.sqrt(PieceShape[type].length);
         // The piece should start in the middle of the board, and if there is none, prefer the left middle.
         // The board width divided by 2 minus the piece width divided by 2 which is equivalent to
         // the code below, will give the correct middle-aligned starting position for the piece.

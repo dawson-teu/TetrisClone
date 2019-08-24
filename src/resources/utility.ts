@@ -1,71 +1,65 @@
-export const PieceType = {
-    I: 1,
-    J: 2,
-    L: 3,
-    O: 4,
-    S: 5,
-    T: 6,
-    Z: 7,
-};
-
-// This code allows PieceType to act as a enum with reverse lookup
-// Remove this code when TypeScript enums are set up
-for (const [key, value] of Object.entries(PieceType)) {
-    PieceType[value] = key;
+export enum PieceType {
+    I = 1,
+    J,
+    L,
+    O,
+    S,
+    T,
+    Z,
 }
 
 export const PieceColour = {
-    I: [88, 190, 252],
-    J: [80, 80, 255],
-    L: [252, 183, 67],
-    O: [233, 233, 65],
-    S: [56, 241, 125],
-    T: [191, 128, 255],
-    Z: [245, 31, 58],
+    [PieceType.I]: [88, 190, 252],
+    [PieceType.J]: [80, 80, 255],
+    [PieceType.L]: [252, 183, 67],
+    [PieceType.O]: [233, 233, 65],
+    [PieceType.S]: [56, 241, 125],
+    [PieceType.T]: [191, 128, 255],
+    [PieceType.Z]: [245, 31, 58],
 };
 
 export const PieceShape = {
-    I: [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    J: [1, 0, 0, 1, 1, 1, 0, 0, 0],
-    L: [0, 0, 1, 1, 1, 1, 0, 0, 0],
-    O: [1, 1, 1, 1],
-    S: [0, 1, 1, 1, 1, 0, 0, 0, 0],
-    T: [0, 1, 0, 1, 1, 1, 0, 0, 0],
-    Z: [1, 1, 0, 0, 1, 1, 0, 0, 0],
+    [PieceType.I]: [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [PieceType.J]: [1, 0, 0, 1, 1, 1, 0, 0, 0],
+    [PieceType.L]: [0, 0, 1, 1, 1, 1, 0, 0, 0],
+    [PieceType.O]: [1, 1, 1, 1],
+    [PieceType.S]: [0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [PieceType.T]: [0, 1, 0, 1, 1, 1, 0, 0, 0],
+    [PieceType.Z]: [1, 1, 0, 0, 1, 1, 0, 0, 0],
 };
 
-export const PieceMoveState = {
-    NONE: 0,
-    LEFT: 1,
-    RIGHT: 2,
-    ROTATING: 3,
-};
+export enum PieceMoveState {
+    NONE,
+    LEFT,
+    RIGHT,
+    ROTATING,
+}
 
-export const PieceDropState = {
-    AUTO: 0,
-    SOFT: 1,
-    HARD: 2,
-};
+export enum PieceDropState {
+    AUTO,
+    SOFT,
+    HARD,
+}
 
-export const PieceLockState = {
-    MOVING: 0,
-    LOCKING: 1,
-    LOCKED: 2,
-};
+export enum PieceLockState {
+    MOVING,
+    LOCKING,
+    LOCKED,
+}
 
-export const Direction = {
-    LEFT: -1,
-    RIGHT: 1,
-};
+export enum Direction {
+    LEFT,
+    RIGHT,
+}
 
 /**
  * Return a new array with a specified length and filled with a specified value
- * @param {number} length - The length of the new array
- * @param {number} value - The value to fill the new array with
- * @returns {number[]} - The new array
+ * @param length - The length of the new array
+ * @param value - The value to fill the new array with
+ * @returns - The new array
  */
-export const newArray = (length, value = 0) => {
-    const array = [];
+export const newArray = <T>(length: number, value: T): T[] => {
+    const array: T[] = [];
     for (let i = 0; i < length; i += 1) {
         array.push(value);
     }
@@ -75,47 +69,47 @@ export const newArray = (length, value = 0) => {
 /**
  * Given a two-dimensional index and the width of the two-dimensional array,
  * return the corresponding one-dimensional index
- * @param {number} x - The x-value of the two-dimensional index
- * @param {number} y - The y-value of the two-dimensional index
- * @param {number} w - The width of the two-dimensional array
- * @returns {number} - The one-dimensional index
+ * @param x - The x-value of the two-dimensional index
+ * @param y - The y-value of the two-dimensional index
+ * @param w - The width of the two-dimensional array
+ * @returns - The one-dimensional index
  */
-export const convert2DindexTo1D = (x, y, w) => {
+export const convert2DindexTo1D = (x: number, y: number, w: number): number => {
     return x + w * y;
 };
 
 /**
  * Given a one-dimensional index and the width of the two-dimensional array,
  * return the corresponding two-dimensional index
- * @param {*} index - The one-dimensional index
- * @param {*} w - The width of the two-dimensional array
- * @returns {object} {x: The x-value of the two-dimensional index,
+ * @param index - The one-dimensional index
+ * @param w - The width of the two-dimensional array
+ * @returns - {x: The x-value of the two-dimensional index,
  *  y: The y-value of the two-dimensional index}
  */
-export const convert1DindexTo2D = (index, w) => {
+export const convert1DindexTo2D = (index: number, w: number): { x: number; y: number } => {
     return { x: index % w, y: Math.floor(index / w) };
 };
 
 /**
  * Given a two-dimensional array, return the corresponding one-dimensional array
- * @param {number[][]} array - The two-dimensional array to convert
- * @returns {number[]} - The converted one-dimensional array
+ * @param array - The two-dimensional array to convert
+ * @returns - The converted one-dimensional array
  */
-export const convert2DarrayTo1D = array => {
+export const convert2DarrayTo1D = <T>(array: T[][]): T[] => {
     return array.flat();
 };
 
 /**
  * Given a one-dimensional array and the width of the two-dimensional array,
  * return the corresponding two-dimensional array
- * @param {number[]} array - The one-dimensional array to convert
- * @param {number} w - The width of the two-dimensional array
- * @returns {number[][]} - The converted two-dimensional array
+ * @param array - The one-dimensional array to convert
+ * @param w - The width of the two-dimensional array
+ * @returns - The converted two-dimensional array
  */
-export const convert1DarrayTo2D = (array, w) => {
-    const array2D = [];
+export const convert1DarrayTo2D = <T>(array: T[], w: number): T[][] => {
+    const array2D: T[][] = [];
     for (let i = 0; i < Math.floor(array.length / w); i += 1) {
-        const row = [];
+        const row: T[] = [];
         for (let j = 0; j < w; j += 1) {
             row.push(array[convert2DindexTo1D(j, i, w)]);
         }
@@ -126,15 +120,14 @@ export const convert1DarrayTo2D = (array, w) => {
 
 /**
  * Returns a two-dimensional array rotated 90 degrees clockwise
- * @param {number[][]} array - The array to rotate
- * @returns {number[][]} - The rotated array
+ * @param array - The array to rotate
+ * @returns - The rotated array
  */
-export const rotate2Darray = array => {
-    // array.width == array.height should be true
+export const rotate2Darray = <T>(array: T[][]): T[][] => {
     // Create a empty array with the original array's width and height
     // to hold the rotated array
-    const rotatedArray = convert1DarrayTo2D(
-        newArray(array.length * array[0].length),
+    const rotatedArray: T[][] = convert1DarrayTo2D(
+        newArray(array.length * array[0].length, null),
         array[0].length,
     );
     // Loop over the indices of the original array
@@ -161,12 +154,11 @@ export const rotate2Darray = array => {
 
 /**
  * Return a random number within a certain range (inclusive)
- * @param {number} a - The lower bound of the range
- * @param {number} b - The upper bound of the range
- * @returns {number} - The random number
+ * @param a - The lower bound of the range
+ * @param b - The upper bound of the range
+ * @returns - The random number
  */
-export const randomRange = (a, b) => {
-    // a and b should be numbers and b > a should be true
+export const randomRange = (a: number, b: number): number => {
     // Math.random returns a value between 0 and 1.
     // This value is then mapped between a and b and floored to an integer
     return Math.floor(Math.random() * (b - a + 1)) + a;
@@ -175,14 +167,14 @@ export const randomRange = (a, b) => {
 /**
  * Return a shuffled version of an array. Shuffled means that the elements of
  * the array have been randomly permuted
- * @param {*[]} array - The array to shuffle
- * @returns {*[]} - The shuffled array
+ * @param array - The array to shuffle
+ * @returns - The shuffled array
  */
-export const shuffleArray = array => {
+export const shuffleArray = <T>(array: T[]): T[] => {
     // Create a copy of the original array and an array
     // to hold the result of the shuffling
-    const originalArray = [...array];
-    const shuffledArray = [];
+    const originalArray: T[] = [...array];
+    const shuffledArray: T[] = [];
 
     // Loop for the length of the original array
     for (let i = 0; i < array.length; i += 1) {
@@ -202,11 +194,11 @@ export const shuffleArray = array => {
 
 /**
  * Linearly interpolate between two values, given a time between 0 and 1
- * @param {number} a - The first value
- * @param {number} b - The second value
- * @param {number} time - The time with which to interpolate
- * @returns {number} - The interpolated value
+ * @param a - The first value
+ * @param b - The second value
+ * @param time - The time with which to interpolate
+ * @returns - The interpolated value
  */
-export const lerp = (a, b, time) => {
+export const lerp = (a: number, b: number, time: number): number => {
     return (1 - time) * a + time * b;
 };

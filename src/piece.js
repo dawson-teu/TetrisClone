@@ -1,5 +1,4 @@
 import {
-    PieceType,
     PieceColour,
     Direction,
     PieceShape,
@@ -8,7 +7,7 @@ import {
     convert1DindexTo2D,
     convert2DarrayTo1D,
     convert1DarrayTo2D,
-} from './resources/utility.js';
+} from './resources/utility.ts';
 import Canvas from './resources/canvas.js';
 
 export default class Piece {
@@ -28,7 +27,7 @@ export default class Piece {
         this.type = type;
         this.width = gridWidth;
         this.height = gridHeight;
-        this.shape = PieceShape[PieceType[type]];
+        this.shape = PieceShape[type];
         this.x = x;
         this.y = y;
     }
@@ -138,7 +137,7 @@ export default class Piece {
                     {
                         strokeColour: Canvas.Colour(40),
                         strokeWeight: 2,
-                        fillColour: Canvas.Colour(...PieceColour[PieceType[this.type]], alpha),
+                        fillColour: Canvas.Colour(...PieceColour[this.type], alpha),
                     },
                 );
             }

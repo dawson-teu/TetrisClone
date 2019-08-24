@@ -51,7 +51,7 @@ import {
     PieceLockState,
     PieceType,
     shuffleArray,
-} from './resources/utility.js';
+} from './resources/utility.ts';
 import * as handlers from './eventHandlers.js';
 
 // Define game constants (in units of milliseconds/block)
@@ -77,10 +77,16 @@ const pieceWrapper = new PieceWrapper(gridWidth, gridHeight);
 
 // Set the random piece bag to a shuffled array of five specific piece types.
 // These piece types allow the player to start without an overhang, unlike the S and Z pieces
-let randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'T']);
+let randomPieceBag = shuffleArray([
+    PieceType.I,
+    PieceType.J,
+    PieceType.L,
+    PieceType.O,
+    PieceType.T,
+]);
 // Take the final piece type out of the random piece bag,
 // and create the new piece using that piece type
-pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
+pieceWrapper.createNewPiece(randomPieceBag.pop());
 
 const pieceState = {
     drop: PieceDropState.AUTO,
@@ -140,11 +146,19 @@ const restartGame = () => {
 
     // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
     if (randomPieceBag.length <= 0) {
-        randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+        randomPieceBag = shuffleArray([
+            PieceType.I,
+            PieceType.J,
+            PieceType.L,
+            PieceType.O,
+            PieceType.S,
+            PieceType.T,
+            PieceType.Z,
+        ]);
     }
     // Take the final piece type out of the random piece bag,
     // and create the new piece using that piece type
-    pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
+    pieceWrapper.createNewPiece(randomPieceBag.pop());
 
     // Initialize the new piece's state to the default values
     setPieceState('drop', 'AUTO');
@@ -171,11 +185,19 @@ const onNewPiece = lockImmediately => {
 
         // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
         if (randomPieceBag.length <= 0) {
-            randomPieceBag = shuffleArray(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+            randomPieceBag = shuffleArray([
+                PieceType.I,
+                PieceType.J,
+                PieceType.L,
+                PieceType.O,
+                PieceType.S,
+                PieceType.T,
+                PieceType.Z,
+            ]);
         }
         // Take the final piece type out of the random piece bag,
         // and create the new piece using that piece type
-        pieceWrapper.createNewPiece(PieceType[randomPieceBag.pop()]);
+        pieceWrapper.createNewPiece(randomPieceBag.pop());
 
         // Initialize the new piece's state to the default values
         setPieceState('drop', 'AUTO');

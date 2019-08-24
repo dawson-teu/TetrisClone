@@ -1,10 +1,9 @@
 import {
     newArray,
     PieceColour,
-    PieceType,
     convert2DindexTo1D,
     convert1DindexTo2D,
-} from './resources/utility.js';
+} from './resources/utility.ts';
 import Canvas from './resources/canvas.js';
 
 export default class Board {
@@ -18,7 +17,7 @@ export default class Board {
         // gridWidth and gridHeight should be numbers > 0
         this.width = gridWidth;
         this.height = gridHeight;
-        this.data = newArray(gridWidth * gridHeight);
+        this.data = newArray(gridWidth * gridHeight, 0);
     }
 
     /**
@@ -124,7 +123,7 @@ export default class Board {
                     blockWidth - lineWidth,
                     blockHeight - lineWidth,
                     {
-                        fillColour: Canvas.Colour(...PieceColour[PieceType[this.data[i]]]),
+                        fillColour: Canvas.Colour(...PieceColour[this.data[i]]),
                     },
                 );
             }
@@ -163,7 +162,7 @@ export default class Board {
                     blockHeight - lineWidth,
                     {
                         strokeWidth: lineWidth,
-                        fillColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]], 80),
+                        fillColour: Canvas.Colour(...PieceColour[pieceCopy.type], 80),
                     },
                 );
 
@@ -175,7 +174,7 @@ export default class Board {
                 //     blockWidth - lineWidth - outlineWidth,
                 //     blockHeight - lineWidth - outlineWidth,
                 //     {
-                //         strokeColour: Canvas.Colour(...PieceColour[PieceType[pieceCopy.type]]),
+                //         strokeColour: Canvas.Colour(...PieceColour[pieceCopy.type]),
                 //         strokeWidth: outlineWidth,
                 //     },
                 // );
@@ -190,7 +189,7 @@ export default class Board {
     clearFilledLines() {
         // Loop through the board's data, assigning the sum of each row to a new array
         // If the board's data has an active block, the value will be 1 and if not, 0
-        const rowSum = newArray(this.height);
+        const rowSum = newArray(this.height, 0);
         for (let i = 0; i < this.data.length; i += 1) {
             const { y } = convert1DindexTo2D(i, this.width);
             rowSum[y] += this.data[i] > 0;
@@ -200,7 +199,7 @@ export default class Board {
         for (let i = 0; i < rowSum.length; i += 1) {
             if (rowSum[i] === this.width) {
                 this.data.splice(i * this.width, this.width);
-                this.data.unshift(...newArray(this.width));
+                this.data.unshift(...newArray(this.width, 0));
             }
         }
     }
@@ -209,6 +208,6 @@ export default class Board {
      * Reset the board data to all zeros (calling this function is equivalent to calling the constructor)
      */
     reset() {
-        this.data = newArray(this.width * this.height);
+        this.data = newArray(this.width * this.height, 0);
     }
 }

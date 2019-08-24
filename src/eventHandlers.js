@@ -1,4 +1,4 @@
-import { Direction, PieceMoveState, PieceDropState, PieceLockState } from './resources/utility.js';
+import { Direction, PieceMoveState, PieceDropState, PieceLockState } from './resources/utility.ts';
 
 /**
  * Handles the move right event
