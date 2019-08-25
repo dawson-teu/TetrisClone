@@ -1,4 +1,4 @@
-import Piece from './piece.js';
+import Piece from './piece.ts';
 import { PieceShape, PieceLockState, lerp } from './resources/utility.ts';
 
 export default class PieceWrapper {
