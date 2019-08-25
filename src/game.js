@@ -44,7 +44,7 @@
 
 import Canvas, { CanvasColour } from './resources/canvas.ts';
 import Board from './board.ts';
-import PieceWrapper from './pieceWrapper.js';
+import PieceWrapper from './pieceWrapper.ts';
 import {
     PieceMoveState,
     PieceDropState,
@@ -239,9 +239,12 @@ const canvas = new Canvas(boardWidth, boardHeight, '#sketch');
 setInterval(handlers.onAutoDrop.bind(context), autoDropTime);
 
 // Update the last frame time
-lastFrameTime = Date.now();
+lastFrameTime = 0;
 
-const draw = () => {
+const draw = thisFrameTime => {
+    // Calculate the change in time between frames (deltaTime)
+    const deltaTime = thisFrameTime - lastFrameTime;
+
     // Clear the screen and set the colour to black
     canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: new CanvasColour(0) });
 
@@ -258,18 +261,16 @@ const draw = () => {
         });
     }
 
-    pieceWrapper.update(board, getPieceState, onNewPiece, restartGame);
+    pieceWrapper.update(board, { getPieceState, onNewPiece, restartGame });
     pieceWrapper.draw(
         canvas,
-        blockWidth,
-        blockHeight,
-        lineWidth,
-        Date.now() - lastFrameTime,
-        lockDelayTime,
+        { blockHeight, blockWidth, lineWidth },
+        { lockDelayTime },
+        { deltaTime },
     );
 
     // Update the last frame time
-    lastFrameTime = Date.now();
+    lastFrameTime = thisFrameTime;
 
     // Continue the game loop by drawing the next frame
     window.requestAnimationFrame(draw);

@@ -78,6 +78,7 @@ interface CanvasDrawingOptions {
 }
 
 export default class Canvas {
+    private static id = 0;
     private context: CanvasRenderingContext2D;
     private width: number;
     private height: number;
@@ -113,10 +114,11 @@ export default class Canvas {
             canvasElement = rootElement as HTMLCanvasElement;
         } else {
             canvasElement = document.createElement('canvas');
-            canvasElement.id = 'canvas0';
+            canvasElement.id = `canvas${Canvas.id}`;
             canvasElement.width = width;
             canvasElement.height = height;
             rootElement.appendChild(canvasElement);
+            Canvas.id += 1;
         }
 
         this.context = canvasElement.getContext('2d');
