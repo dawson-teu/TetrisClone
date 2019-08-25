@@ -3,6 +3,11 @@
     "version": "1.0.0",
     "description": "A simple tetris game",
     "main": "game.js",
+    "homepage": "https://github.com/dawson-teu/TetrisClone/#readme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dawson-teu/TetrisClone.git"
+    },
     "scripts": {
         "lint": "echo Linting Javascript/Typescript... && %cd%/node_modules/.bin/eslint --ext .js,.jsx,.ts,.tsx --fix --config .eslintrc.json --ignore-path .eslintignore . && echo Javascript/Typescript Linting succesful. No problems found.",
         "build": "npm run count && npm run lint && echo Building... && %cd%/node_modules/.bin/webpack -p --config ./webpack.prod.js",
