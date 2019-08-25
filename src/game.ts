@@ -72,12 +72,12 @@ const horizontalBlockingTime = 150;
 const lockDelayTime = 500;
 
 // Initialize the board, the piece wrapper (to control the piece), the object to hold the piece's state
-const board = new Board(gridWidth, gridHeight);
-const pieceWrapper = new PieceWrapper(gridWidth, gridHeight);
+const board: Board = new Board(gridWidth, gridHeight);
+const pieceWrapper: PieceWrapper = new PieceWrapper(gridWidth, gridHeight);
 
 // Set the random piece bag to a shuffled array of five specific piece types.
 // These piece types allow the player to start without an overhang, unlike the S and Z pieces
-let randomPieceBag = shuffleArray([
+let randomPieceBag: PieceType[] = shuffleArray([
     PieceType.I,
     PieceType.J,
     PieceType.L,
@@ -88,7 +88,13 @@ let randomPieceBag = shuffleArray([
 // and create the new piece using that piece type
 pieceWrapper.createNewPiece(randomPieceBag.pop());
 
-const pieceState = {
+interface PieceState {
+    drop: PieceDropState;
+    move: PieceMoveState;
+    lock: PieceLockState;
+}
+
+const currentPieceState: PieceState = {
     drop: PieceDropState.AUTO,
     move: PieceMoveState.NONE,
     lock: PieceLockState.MOVING,
@@ -96,51 +102,34 @@ const pieceState = {
 
 // Create a variable to hold the time the last frame was drawn.
 // This is used to calculate deltaTime
-let lastFrameTime;
+let lastFrameTime: number;
 
 /**
  * Get either one parameter or all of the piece's state
- * @param {'drop' | 'move' | 'lock'} [key] - The parameter of the state to return
- * @returns {PieceDropState | PieceMoveState | PieceLockState} - The parameter of the state specified
+ * @param key - The parameter of the state to return
+ * @returns - The parameter of the state specified
  */
-const getPieceState = (key = 'all') => {
-    // key should be either 'all', 'drop', 'move', or 'lock'
-    const lowerCaseKey = key.toLocaleLowerCase();
-    if (lowerCaseKey === 'all') {
-        return pieceState;
-    }
-    return pieceState[lowerCaseKey];
+const getPieceState = <K extends keyof PieceState>(key: K): PieceState[K] => {
+    const lowerCaseKey: K = key.toLowerCase() as K;
+    return currentPieceState[lowerCaseKey];
 };
 
 /**
  * Set one parameter of the piece's state
- * @param {'drop' | 'move' | 'lock'} key - The parameter of the state to set
- * @param {PieceDropState | PieceMoveState | PieceLockState} value - The value to set the state to
+ * @param key - The parameter of the state to set
+ * @param value - The value to set the state to
  */
-const setPieceState = (key, value) => {
-    // key should be either 'drop', 'move', or 'lock'
-    // value should be a member of PieceDropState, PieceMoveState or PieceLockState
-    const lowerCaseKey = key.toLocaleLowerCase();
-    const upperCaseValue = value.toLocaleUpperCase();
+const setPieceState = <K extends keyof PieceState>(key: K, value: PieceState[K]): void => {
+    const lowerCaseKey: K = key.toLowerCase() as K;
 
-    // Use the appropriate enum to set the piece's state, based on the key
-    let stateValue;
-    if (lowerCaseKey === 'drop') {
-        stateValue = PieceDropState[upperCaseValue];
-    } else if (lowerCaseKey === 'move') {
-        stateValue = PieceMoveState[upperCaseValue];
-    } else if (lowerCaseKey === 'lock') {
-        stateValue = PieceLockState[upperCaseValue];
-    }
-
-    // if stateValue is undefined, the function should return
-    pieceState[lowerCaseKey] = stateValue;
+    const stateValue: PieceState[K] = value;
+    currentPieceState[lowerCaseKey] = stateValue;
 };
 
 /**
  * The callback function for the game is restarted
  */
-const restartGame = () => {
+const restartGame = (): void => {
     // Clear the board and create a new piece
     board.reset();
 
@@ -161,24 +150,24 @@ const restartGame = () => {
     pieceWrapper.createNewPiece(randomPieceBag.pop());
 
     // Initialize the new piece's state to the default values
-    setPieceState('drop', 'AUTO');
-    setPieceState('move', 'NONE');
-    setPieceState('lock', 'MOVING');
+    setPieceState('drop', PieceDropState.AUTO);
+    setPieceState('move', PieceMoveState.NONE);
+    setPieceState('lock', PieceLockState.MOVING);
 };
 
 /**
  * The callback function for when a new piece is created
- * @param {bool} lockImmediately - Whether the piece should be locked immediately,
- *  or after the lock delay. This is useful to lock hard drops immediately
+ * @param lockImmediately - Whether the piece should be locked immediately, or after
+ *  the lock delay. This is useful to lock hard drops immediately
  */
-const onNewPiece = lockImmediately => {
+const onNewPiece = (lockImmediately: boolean): void => {
     // Set the old piece to locking
-    setPieceState('lock', 'LOCKING');
+    setPieceState('lock', PieceLockState.LOCKING);
 
     // Create a function to be called when the piece locks.
-    const lockPiece = () => {
+    const lockPiece = (): void => {
         // Set the old piece to locked
-        setPieceState('lock', 'LOCKED');
+        setPieceState('lock', PieceLockState.LOCKED);
 
         // Add the old piece to the board
         board.add(pieceWrapper.getPiece());
@@ -200,9 +189,9 @@ const onNewPiece = lockImmediately => {
         pieceWrapper.createNewPiece(randomPieceBag.pop());
 
         // Initialize the new piece's state to the default values
-        setPieceState('drop', 'AUTO');
-        setPieceState('move', 'NONE');
-        setPieceState('lock', 'MOVING');
+        setPieceState('drop', PieceDropState.AUTO);
+        setPieceState('move', PieceMoveState.NONE);
+        setPieceState('lock', PieceLockState.MOVING);
     };
 
     if (lockImmediately) {
@@ -213,10 +202,10 @@ const onNewPiece = lockImmediately => {
 };
 
 // Create the canvas
-const boardWidth = gridWidth * blockWidth;
-const boardHeight = gridHeight * blockHeight;
+const boardWidth: number = gridWidth * blockWidth;
+const boardHeight: number = gridHeight * blockHeight;
 
-const canvas = new Canvas(boardWidth, boardHeight, '#sketch');
+const canvas: Canvas = new Canvas(boardWidth, boardHeight, '#sketch');
 
 // Set the automatic drop handler to check repeatedly after a certain time
 setInterval(handlers.onAutoDrop, autoDropTime, { getPieceState, pieceWrapper });
@@ -224,7 +213,7 @@ setInterval(handlers.onAutoDrop, autoDropTime, { getPieceState, pieceWrapper });
 // Update the last frame time
 lastFrameTime = 0;
 
-const draw = thisFrameTime => {
+const draw = (thisFrameTime: DOMHighResTimeStamp): void => {
     // Calculate the change in time between frames (deltaTime)
     const deltaTime = thisFrameTime - lastFrameTime;
 
@@ -237,7 +226,7 @@ const draw = thisFrameTime => {
     // Don't show the ghost piece if the piece is locking.
     // This is because it doesn't look nice
     if (getPieceState('lock') !== PieceLockState.LOCKING) {
-        board.showGhostPiece(canvas, pieceWrapper.currentPiece, {
+        board.showGhostPiece(canvas, pieceWrapper.getPiece(), {
             blockWidth,
             blockHeight,
             lineWidth,
@@ -270,7 +259,7 @@ document.addEventListener('keydown', event => {
     }
 
     if (event.key === 'ArrowLeft') {
-        setPieceState('move', 'LEFT');
+        setPieceState('move', PieceMoveState.LEFT);
         handlers.onMoveLeft({
             board,
             getPieceState,
@@ -280,7 +269,7 @@ document.addEventListener('keydown', event => {
         });
     }
     if (event.key === 'ArrowRight') {
-        setPieceState('move', 'RIGHT');
+        setPieceState('move', PieceMoveState.RIGHT);
         handlers.onMoveRight({
             board,
             getPieceState,
@@ -290,41 +279,41 @@ document.addEventListener('keydown', event => {
         });
     }
     if (event.key === 'ArrowDown') {
-        setPieceState('drop', 'SOFT');
+        setPieceState('drop', PieceDropState.SOFT);
         handlers.onSoftDrop({ getPieceState, pieceWrapper, softDropTime });
     }
     if (event.key === 'ArrowUp') {
-        setPieceState('move', 'ROTATING');
+        setPieceState('move', PieceMoveState.ROTATING);
         handlers.onRotate({ board, getPieceState, pieceWrapper });
     }
     if (event.key === ' ') {
-        setPieceState('drop', 'HARD');
+        setPieceState('drop', PieceDropState.HARD);
         handlers.onHardDrop({ board, getPieceState, pieceWrapper });
     }
 });
 
-document.addEventListener('keyup', event => {
+document.addEventListener('keyup', (event: KeyboardEvent) => {
     // When a key is released, set the state to the default.
     // This is to stop the handlers from looping
     if (event.key === 'ArrowLeft') {
-        setPieceState('move', 'NONE');
+        setPieceState('move', PieceMoveState.NONE);
     }
     if (event.key === 'ArrowRight') {
-        setPieceState('move', 'NONE');
+        setPieceState('move', PieceMoveState.NONE);
     }
     if (event.key === 'ArrowDown') {
-        setPieceState('drop', 'AUTO');
+        setPieceState('drop', PieceDropState.AUTO);
     }
     if (event.key === ' ') {
-        setPieceState('drop', 'AUTO');
+        setPieceState('drop', PieceDropState.AUTO);
     }
 });
 
 // This is for development use. Do Not Ship
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('#restart').addEventListener('click', event => {
+    document.querySelector('#restart').addEventListener('click', (event: MouseEvent) => {
         // When the restart button is clicked, restart the game and focus on the game sketch
         restartGame();
-        event.currentTarget.blur();
+        (event.currentTarget as HTMLButtonElement).blur();
     });
 });

@@ -2,7 +2,7 @@
     "name": "tetris",
     "version": "1.0.0",
     "description": "A simple tetris game",
-    "main": "game.js",
+    "main": "game.ts",
     "homepage": "https://github.com/dawson-teu/TetrisClone/#readme",
     "repository": {
         "type": "git",
