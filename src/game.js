@@ -43,7 +43,7 @@
 */
 
 import Canvas, { CanvasColour } from './resources/canvas.ts';
-import Board from './board.js';
+import Board from './board.ts';
 import PieceWrapper from './pieceWrapper.js';
 import {
     PieceMoveState,
@@ -246,12 +246,16 @@ const draw = () => {
     canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: new CanvasColour(0) });
 
     board.clearFilledLines();
-    board.draw(canvas, blockWidth, blockHeight, lineWidth);
+    board.draw(canvas, { blockWidth, blockHeight, lineWidth });
 
     // Don't show the ghost piece if the piece is locking.
     // This is because it doesn't look nice
     if (getPieceState('lock') !== PieceLockState.LOCKING) {
-        board.showGhostPiece(canvas, blockWidth, blockHeight, lineWidth, pieceWrapper.currentPiece);
+        board.showGhostPiece(canvas, pieceWrapper.currentPiece, {
+            blockWidth,
+            blockHeight,
+            lineWidth,
+        });
     }
 
     pieceWrapper.update(board, getPieceState, onNewPiece, restartGame);

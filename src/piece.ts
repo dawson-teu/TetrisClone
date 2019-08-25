@@ -10,12 +10,14 @@ import {
     convert1DarrayTo2D,
 } from './resources/utility.ts';
 import Canvas, { CanvasColour } from './resources/canvas.ts';
-// Import board file for type, when converted to ts
+import Board from './board.ts';
 
 type PieceShapeData = 0 | 1;
 
-interface BoardInterface {
-    getData: (x: number, y: number) => number;
+interface DrawOptions {
+    blockWidth: number;
+    blockHeight: number;
+    lineWidth: number;
 }
 
 export default class Piece {
@@ -77,6 +79,14 @@ export default class Piece {
     }
 
     /**
+     * Get the piece's type
+     * @returns - The type
+     */
+    getType(): PieceType {
+        return this.type;
+    }
+
+    /**
      * Return a copy of the current piece
      */
     copy(): Piece {
@@ -92,8 +102,7 @@ export default class Piece {
      * @param board - The board to check collisions against
      * @returns - Whether the piece is touching the board's floor or not
      */
-    isTouchingBoardFloor(board: BoardInterface): boolean {
-        // board should be a Board
+    isTouchingBoardFloor(board: Board): boolean {
         // Loop through the piece's shape
         for (let i = 0; i < this.shape.length; i += 1) {
             // If the shape has an active block at this local position
@@ -112,8 +121,7 @@ export default class Piece {
      * @param board - The board to check collisions against
      * @returns - Whether the piece is touching the board's ceiling or not
      */
-    isIntersectingBoardCeiling(board: BoardInterface): boolean {
-        // board should be a Board
+    isIntersectingBoardCeiling(board: Board): boolean {
         // Loop through the piece's shape
         for (let i = 0; i < this.shape.length; i += 1) {
             const { x, y } = convert1DindexTo2D(i, Math.sqrt(this.shape.length));
@@ -127,18 +135,10 @@ export default class Piece {
     /**
      * Draw the piece to a canvas
      * @param canvas - The canvas to draw the board to
-     * @param blockWidth - The width of an individual block
-     * @param blockHeight - The height of an individual block
-     * @param lineWidth - The width of the lines between blocks
+     * @param options - The options that will control how the piece will be drawn
      * @param alpha - The alpha value, if any, to draw the piece with (optional)
      */
-    draw(
-        canvas: Canvas,
-        blockWidth: number,
-        blockHeight: number,
-        lineWidth: number,
-        alpha: number,
-    ): void {
+    draw(canvas: Canvas, options: DrawOptions, alpha?: number): void {
         // Loop through the piece's shape
         for (let i = 0; i < this.shape.length; i += 1) {
             if (this.shape[i]) {
@@ -148,10 +148,10 @@ export default class Piece {
                 const { x, y } = convert1DindexTo2D(i, Math.sqrt(this.shape.length));
                 const colour: number[] = PieceColour[this.type];
                 canvas.rect(
-                    (this.x + x) * blockWidth + lineWidth / 2,
-                    (this.y + y) * blockHeight + lineWidth / 2,
-                    blockWidth - lineWidth,
-                    blockHeight - lineWidth,
+                    (this.x + x) * options.blockWidth + options.lineWidth / 2,
+                    (this.y + y) * options.blockHeight + options.lineWidth / 2,
+                    options.blockWidth - options.lineWidth,
+                    options.blockHeight - options.lineWidth,
                     {
                         strokeColour: new CanvasColour(40),
                         strokeWidth: 2,
@@ -167,8 +167,7 @@ export default class Piece {
      * @param direction - The direction to move the piece in
      * @param board - The board to check collisions against
      */
-    move(direction: Direction, board: BoardInterface): void {
-        // board should be a Board
+    move(direction: Direction, board: Board): void {
         // direction should be a member of the Direction enum
         let posChange: number;
         if (direction === Direction.LEFT) {
@@ -190,8 +189,7 @@ export default class Piece {
      * and try to rotate from that position
      * @param board - The board to check collisions against
      */
-    rotate(board: BoardInterface): void {
-        // board should be a Board
+    rotate(board: Board): void {
         // The list of ordered positions to try to rotate the piece from
         const tests: number[] = [0, 1, -1, 2, -2];
 
@@ -234,8 +232,7 @@ export default class Piece {
      * @param board - The board to check collisions against
      * @returns - Whether the piece is colliding with the board or not
      */
-    private isIntersectingBoardWalls(board: BoardInterface): boolean {
-        // board should be a Board
+    private isIntersectingBoardWalls(board: Board): boolean {
         const pieceLeftSide: number[] = this.pieceLeftSide();
         const pieceRightSide: number[] = this.pieceRightSide();
 
@@ -310,8 +307,7 @@ export default class Piece {
      * @param board - The board to check collisions against
      * @returns - The minimum distance from this piece's left side to the board's left side
      */
-    private minLeftDist(leftSide: number[], board: BoardInterface): number {
-        // board should be a Board
+    private minLeftDist(leftSide: number[], board: Board): number {
         // Initialize the minimum distance to positive infinity.
         // This is so that any distance will be less than the starting minimum distance
         let minDist = Infinity;
@@ -353,8 +349,7 @@ export default class Piece {
      * @param board - The board to check collisions against
      * @returns - The minimum distance from this piece's right side to the board's right side
      */
-    private minRightDist(rightSide: number[], board: BoardInterface): number {
-        // board should be a Board
+    private minRightDist(rightSide: number[], board: Board): number {
         // Initialize the minimum distance to positive infinity.
         // This is so that any distance will be less than the starting minimum distance
         let minDist = Infinity;
@@ -398,13 +393,7 @@ export default class Piece {
      * @param direction - The direction to check the distance in
      * @returns - The distance to the board wall
      */
-    private distanceToBoardWall(
-        x: number,
-        y: number,
-        board: BoardInterface,
-        direction: Direction,
-    ): number {
-        // board should be a Board
+    private distanceToBoardWall(x: number, y: number, board: Board, direction: Direction): number {
         let distance = 0;
         if (direction === Direction.LEFT) {
             // If the direction to check the distance in is left, start at the

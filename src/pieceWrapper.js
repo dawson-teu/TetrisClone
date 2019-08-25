@@ -73,9 +73,11 @@ export default class PieceWrapper {
         // to animate the piece fading out.
         this.currentPiece.draw(
             canvas,
-            blockWidth,
-            blockHeight,
-            lineWidth,
+            {
+                blockWidth,
+                blockHeight,
+                lineWidth,
+            },
             lerp(255, 0, this.lockingAnimationTime / lockDelayTime),
         );
     }
