@@ -52,7 +52,7 @@ import {
     PieceType,
     shuffleArray,
 } from './resources/utility.ts';
-import * as handlers from './eventHandlers.js';
+import * as handlers from './eventHandlers.ts';
 
 // Define game constants (in units of milliseconds/block)
 const gridWidth = 10;
@@ -212,23 +212,6 @@ const onNewPiece = lockImmediately => {
     }
 };
 
-// Set the context for the event handlers
-const context = {
-    gridWidth,
-    gridHeight,
-    blockHeight,
-    blockWidth,
-    autoDropTime,
-    softDropTime,
-    horizontalMoveTime,
-    board,
-    pieceWrapper,
-    pieceState,
-    getPieceState,
-    setPieceState,
-    horizontalBlockingTime,
-};
-
 // Create the canvas
 const boardWidth = gridWidth * blockWidth;
 const boardHeight = gridHeight * blockHeight;
@@ -236,7 +219,7 @@ const boardHeight = gridHeight * blockHeight;
 const canvas = new Canvas(boardWidth, boardHeight, '#sketch');
 
 // Set the automatic drop handler to check repeatedly after a certain time
-setInterval(handlers.onAutoDrop.bind(context), autoDropTime);
+setInterval(handlers.onAutoDrop, autoDropTime, { getPieceState, pieceWrapper });
 
 // Update the last frame time
 lastFrameTime = 0;
@@ -288,23 +271,35 @@ document.addEventListener('keydown', event => {
 
     if (event.key === 'ArrowLeft') {
         setPieceState('move', 'LEFT');
-        handlers.onMoveLeft.call(context, false);
+        handlers.onMoveLeft({
+            board,
+            getPieceState,
+            horizontalBlockingTime,
+            horizontalMoveTime,
+            pieceWrapper,
+        });
     }
     if (event.key === 'ArrowRight') {
         setPieceState('move', 'RIGHT');
-        handlers.onMoveRight.call(context, false);
+        handlers.onMoveRight({
+            board,
+            getPieceState,
+            horizontalBlockingTime,
+            horizontalMoveTime,
+            pieceWrapper,
+        });
     }
     if (event.key === 'ArrowDown') {
         setPieceState('drop', 'SOFT');
-        handlers.onSoftDrop.call(context);
+        handlers.onSoftDrop({ getPieceState, pieceWrapper, softDropTime });
     }
     if (event.key === 'ArrowUp') {
         setPieceState('move', 'ROTATING');
-        handlers.onRotate.call(context);
+        handlers.onRotate({ board, getPieceState, pieceWrapper });
     }
     if (event.key === ' ') {
         setPieceState('drop', 'HARD');
-        handlers.onHardDrop.call(context);
+        handlers.onHardDrop({ board, getPieceState, pieceWrapper });
     }
 });
 
