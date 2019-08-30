@@ -9,7 +9,7 @@ import {
     lerp,
 } from './resources/utility.ts';
 import Board from './board.ts';
-import Canvas from './resources/canvas.ts';
+import Canvas, { CanvasColour } from './resources/canvas.ts';
 
 interface UpdateCallback {
     getPieceState: (key: string) => PieceDropState | PieceMoveState | PieceLockState;
@@ -21,6 +21,7 @@ interface DrawOptions {
     blockWidth: number;
     blockHeight: number;
     lineWidth: number;
+    lineColour: CanvasColour;
 }
 
 interface GameConsts {

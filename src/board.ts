@@ -12,6 +12,7 @@ interface DrawOptions {
     blockWidth: number;
     blockHeight: number;
     lineWidth: number;
+    lineColour: CanvasColour;
 }
 
 export default class Board {
@@ -93,7 +94,7 @@ export default class Board {
         const boardHeight: number = this.height * options.blockHeight;
 
         // Draw the horizontal board outlines
-        for (let i = 1; i < this.height; i += 1) {
+        for (let i = 0; i <= this.height; i += 1) {
             canvas.path(
                 [
                     new CanvasPoint(0, i * options.blockHeight),
@@ -101,13 +102,13 @@ export default class Board {
                 ],
                 false,
                 {
-                    strokeColour: new CanvasColour(15),
+                    strokeColour: options.lineColour,
                     strokeWidth: options.lineWidth,
                 },
             );
         }
         // Draw the vertical board outlines
-        for (let i = 1; i < this.width; i += 1) {
+        for (let i = 0; i <= this.width; i += 1) {
             canvas.path(
                 [
                     new CanvasPoint(i * options.blockHeight, 0),
@@ -115,7 +116,7 @@ export default class Board {
                 ],
                 false,
                 {
-                    strokeColour: new CanvasColour(15),
+                    strokeColour: options.lineColour,
                     strokeWidth: options.lineWidth,
                 },
             );

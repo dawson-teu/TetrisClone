@@ -19,9 +19,24 @@ export class CanvasColour {
         // a should be a number or not specified
         // these variables should be private
         this.r = CanvasColour.clampInColourRange(r);
-        this.g = g ? CanvasColour.clampInColourRange(g) : r;
-        this.b = b ? CanvasColour.clampInColourRange(b) : r;
-        this.a = a ? CanvasColour.clampInColourRange(a) : a;
+
+        if (g !== undefined) {
+            this.g = CanvasColour.clampInColourRange(g);
+        } else {
+            this.g = r;
+        }
+
+        if (b !== undefined) {
+            this.b = CanvasColour.clampInColourRange(b);
+        } else {
+            this.b = r;
+        }
+
+        if (a !== undefined) {
+            this.a = CanvasColour.clampInColourRange(a);
+        } else {
+            this.a = undefined;
+        }
     }
 
     /**

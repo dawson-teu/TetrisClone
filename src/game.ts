@@ -30,8 +30,6 @@
             - https://webpack.js.org/guides/lazy-loading/
         - Adding a web server to handle requests
             https://expressjs.com/en/starter/hello-world.html
-        - Consider migrating code to TypeScript?
-            - See links for more info
         - Create an AI with genetic algorithms and neural networks to play the game
             - https://www.tensorflow.org/js
         - Add tests with jest for unit/integration testing and testing the overall game 
@@ -62,6 +60,7 @@ const blockWidth = 40;
 const blockHeight = 40;
 
 const lineWidth = blockWidth / 20;
+const lineColour: CanvasColour = new CanvasColour(55);
 
 const autoDropTime = 500;
 const softDropTime = 100;
@@ -218,10 +217,10 @@ const draw = (thisFrameTime: DOMHighResTimeStamp): void => {
     const deltaTime = thisFrameTime - lastFrameTime;
 
     // Clear the screen and set the colour to black
-    canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: new CanvasColour(0) });
+    canvas.rect(0, 0, boardWidth, boardHeight, { fillColour: new CanvasColour(20) });
 
     board.clearFilledLines();
-    board.draw(canvas, { blockWidth, blockHeight, lineWidth });
+    board.draw(canvas, { blockWidth, blockHeight, lineWidth, lineColour });
 
     // Don't show the ghost piece if the piece is locking.
     // This is because it doesn't look nice
@@ -230,13 +229,14 @@ const draw = (thisFrameTime: DOMHighResTimeStamp): void => {
             blockWidth,
             blockHeight,
             lineWidth,
+            lineColour,
         });
     }
 
     pieceWrapper.update(board, { getPieceState, onNewPiece, restartGame });
     pieceWrapper.draw(
         canvas,
-        { blockHeight, blockWidth, lineWidth },
+        { blockHeight, blockWidth, lineWidth, lineColour },
         { lockDelayTime },
         { deltaTime },
     );

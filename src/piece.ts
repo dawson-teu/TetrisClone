@@ -18,6 +18,7 @@ interface DrawOptions {
     blockWidth: number;
     blockHeight: number;
     lineWidth: number;
+    lineColour: CanvasColour;
 }
 
 export default class Piece {
@@ -153,7 +154,7 @@ export default class Piece {
                     options.blockWidth - options.lineWidth,
                     options.blockHeight - options.lineWidth,
                     {
-                        strokeColour: new CanvasColour(40),
+                        strokeColour: options.lineColour,
                         strokeWidth: 2,
                         fillColour: new CanvasColour(colour[0], colour[1], colour[2], alpha),
                     },
