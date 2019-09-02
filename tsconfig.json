@@ -3,14 +3,17 @@
         "outDir": "./build/",
         "noImplicitAny": true,
         "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
         "module": "es6",
         "target": "es6",
         "lib": [
             "es2019",
             "dom"
-        ]
+        ],
+        "jsx": "react"
     },
     "include": [
         "src/**/*.ts",
+        "src/**/*.tsx"
     ],
 }

@@ -1,15 +1,18 @@
 {
     "extends": ["airbnb-base", "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended", "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:import/errors", "plugin:import/warnings",
+        "plugin:import/errors", "plugin:import/warnings", "plugin:react/recommended", "plugin:jsx-a11y/recommended",
         "plugin:prettier/recommended", "prettier"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "project": "./tsconfig.json",
-        "createDefaultProgram": true
+        "createDefaultProgram": true,
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
-    "plugins": ["@typescript-eslint", "import", "prettier"],
+    "plugins": ["@typescript-eslint", "react", "jsx-a11y", "import", "prettier"],
     "rules": {
         "linebreak-style": "off",
         "import/extensions": ["error", "always", {
@@ -30,6 +33,9 @@
             "webpack": {
                 "config": "./webpack.common.js"
             }
+        },
+        "react": {
+            "version": "detect"
         }
     },
     "env": {

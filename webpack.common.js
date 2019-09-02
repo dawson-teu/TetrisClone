@@ -3,14 +3,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    entry: './src/game.ts',
+    entry: path.resolve(__dirname, 'src/game.ts'),
     output: {
         path: path.resolve(__dirname, 'build'),
         filename: 'bundle.js',
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".jsx"]
-      },
+    },
     module: {
         rules: [
             {
