@@ -3,6 +3,10 @@
         - Map out function call chain to make the order of call execution more clear
             - This should help during debugging
 
+    Gameplay
+        - Create soundtrack for game
+        - Create sound effects on game events
+
     UI Features
         - Add UI elements around sketch with React
         - These should display score/level, next 3 pieces,
