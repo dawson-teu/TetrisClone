@@ -153,11 +153,7 @@ export default class Canvas {
         const rectangle = new Path2D();
         rectangle.rect(x, y, w, h);
 
-        if (options) {
-            this.drawPath2D(rectangle, options);
-        } else {
-            this.drawPath2D(rectangle, {});
-        }
+        this.drawPath2D(rectangle, options);
     }
 
     /**
@@ -250,11 +246,7 @@ export default class Canvas {
             y,
         );
 
-        if (options) {
-            this.drawPath2D(ellipse, options);
-        } else {
-            this.drawPath2D(ellipse, {});
-        }
+        this.drawPath2D(ellipse, options);
     }
 
     /**
@@ -282,11 +274,7 @@ export default class Canvas {
             path.closePath();
         }
 
-        if (options) {
-            this.drawPath2D(path, options);
-        } else {
-            this.drawPath2D(path, {});
-        }
+        this.drawPath2D(path, options);
     }
 
     /**
@@ -294,7 +282,7 @@ export default class Canvas {
      * @param path - The path to draw
      * @param options - The options that will control how the path will be drawn
      */
-    private drawPath2D(path: Path2D, options: CanvasDrawingOptions): void {
+    private drawPath2D(path: Path2D, options?: CanvasDrawingOptions): void {
         if (options.strokeColour) {
             this.context.strokeStyle = options.strokeColour.getString();
             this.context.lineWidth = options.strokeWidth;

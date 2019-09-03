@@ -105,7 +105,7 @@ const currentPieceState: PieceState = {
 
 // Create a variable to hold the time the last frame was drawn.
 // This is used to calculate deltaTime
-let lastFrameTime: number;
+let lastFrameTime = 0;
 
 /**
  * Get either one parameter or all of the piece's state
@@ -213,9 +213,6 @@ const canvas: Canvas = new Canvas(boardWidth, boardHeight, '#sketch');
 // Set the automatic drop handler to check repeatedly after a certain time
 setInterval(handlers.onAutoDrop, autoDropTime, { getPieceState, pieceWrapper });
 
-// Update the last frame time
-lastFrameTime = 0;
-
 const draw = (thisFrameTime: DOMHighResTimeStamp): void => {
     // Calculate the change in time between frames (deltaTime)
     const deltaTime = thisFrameTime - lastFrameTime;
@@ -241,8 +238,7 @@ const draw = (thisFrameTime: DOMHighResTimeStamp): void => {
     pieceWrapper.draw(
         canvas,
         { blockHeight, blockWidth, lineWidth, lineColour },
-        { lockDelayTime },
-        { deltaTime },
+        { lockDelayTime, deltaTime },
     );
 
     // Update the last frame time

@@ -24,11 +24,8 @@ interface DrawOptions {
     lineColour: CanvasColour;
 }
 
-interface GameConsts {
+interface GameInfo {
     lockDelayTime: number;
-}
-
-interface GameTime {
     deltaTime: number;
 }
 
@@ -84,14 +81,13 @@ export default class PieceWrapper {
      * (This is a wrapper for the piece's draw function)
      * @param canvas - The canvas to draw the board to
      * @param options - The options that will control how the piece will be drawn
-     * @param gameConsts - The game constants this function needs to draw
-     * @param gameTime - The game time (timing information) this function needs to draw
+     * @param gameInfo - The information about the game that the function needs to draw
      */
-    draw(canvas: Canvas, options: DrawOptions, gameConsts: GameConsts, gameTime: GameTime): void {
+    draw(canvas: Canvas, options: DrawOptions, gameInfo: GameInfo): void {
         // If the piece is not locking the animation time should be reset to 0.
         // If it is, the animation time should be updated
         if (this.locking) {
-            this.lockingAnimationTime += gameTime.deltaTime;
+            this.lockingAnimationTime += gameInfo.deltaTime;
         } else {
             this.lockingAnimationTime = 0;
         }
@@ -102,7 +98,7 @@ export default class PieceWrapper {
         this.currentPiece.draw(
             canvas,
             options,
-            lerp(255, 0, this.lockingAnimationTime / gameConsts.lockDelayTime),
+            lerp(255, 0, this.lockingAnimationTime / gameInfo.lockDelayTime),
         );
     }
 
