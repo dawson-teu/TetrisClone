@@ -78,15 +78,22 @@ const lockDelayTime = 500;
 const board: Board = new Board(gridWidth, gridHeight);
 const pieceWrapper: PieceWrapper = new PieceWrapper(gridWidth, gridHeight);
 
-// Set the random piece bag to a shuffled array of five specific piece types.
-// These piece types allow the player to start without an overhang, unlike the S and Z pieces
-let randomPieceBag: PieceType[] = shuffleArray([
+const pieces: PieceType[] = [
     PieceType.I,
     PieceType.J,
     PieceType.L,
     PieceType.O,
+    PieceType.S,
     PieceType.T,
-]);
+    PieceType.Z,
+];
+
+// Set the random piece bag to a shuffled array of five specific piece types.
+// These piece types allow the player to start without an overhang, unlike the S and Z pieces
+let randomPieceBag: PieceType[] = shuffleArray(
+    pieces.filter(value => value !== PieceType.S && value !== PieceType.Z),
+);
+
 // Take the final piece type out of the random piece bag,
 // and create the new piece using that piece type
 pieceWrapper.createNewPiece(randomPieceBag.pop());
@@ -102,10 +109,6 @@ const currentPieceState: PieceState = {
     move: PieceMoveState.NONE,
     lock: PieceLockState.MOVING,
 };
-
-// Create a variable to hold the time the last frame was drawn.
-// This is used to calculate deltaTime
-let lastFrameTime = 0;
 
 /**
  * Get either one parameter or all of the piece's state
@@ -138,15 +141,7 @@ const restartGame = (): void => {
 
     // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
     if (randomPieceBag.length <= 0) {
-        randomPieceBag = shuffleArray([
-            PieceType.I,
-            PieceType.J,
-            PieceType.L,
-            PieceType.O,
-            PieceType.S,
-            PieceType.T,
-            PieceType.Z,
-        ]);
+        randomPieceBag = shuffleArray(pieces);
     }
     // Take the final piece type out of the random piece bag,
     // and create the new piece using that piece type
@@ -177,15 +172,7 @@ const onNewPiece = (lockImmediately: boolean): void => {
 
         // If the random piece bag is empty, reset it to a shuffled array of all seven piece types
         if (randomPieceBag.length <= 0) {
-            randomPieceBag = shuffleArray([
-                PieceType.I,
-                PieceType.J,
-                PieceType.L,
-                PieceType.O,
-                PieceType.S,
-                PieceType.T,
-                PieceType.Z,
-            ]);
+            randomPieceBag = shuffleArray(pieces);
         }
         // Take the final piece type out of the random piece bag,
         // and create the new piece using that piece type
@@ -204,10 +191,13 @@ const onNewPiece = (lockImmediately: boolean): void => {
     }
 };
 
+// Create a variable to hold the time the last frame was drawn.
+// This is used to calculate deltaTime
+let lastFrameTime = 0;
+
 // Create the canvas
 const boardWidth: number = gridWidth * blockWidth;
 const boardHeight: number = gridHeight * blockHeight;
-
 const canvas: Canvas = new Canvas(boardWidth, boardHeight, '#sketch');
 
 // Set the automatic drop handler to check repeatedly after a certain time
