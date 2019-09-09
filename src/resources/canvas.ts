@@ -15,11 +15,7 @@ export class CanvasColour {
      * @param a - The alpha value (optional)
      */
     constructor(r: number, g?: number, b?: number, a?: number) {
-        // r, g, and b should be numbers
-        // a should be a number or not specified
-        // these variables should be private
         this.r = CanvasColour.clampInColourRange(r);
-
         if (g !== undefined) {
             this.g = CanvasColour.clampInColourRange(g);
         } else {

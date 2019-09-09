@@ -1,3 +1,5 @@
+// This class should not exist. The game can handle the creation of pieces.
+// All uses should be changed into piece control by the game.
 import Piece from './piece.ts';
 import {
     PieceType,

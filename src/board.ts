@@ -52,6 +52,8 @@ export default class Board {
         return this.data[convert2DindexTo1D(x, y, this.width)];
     }
 
+    // This function is only used internally and is not needed.
+    // It should be removed and all uses should be changed to direct assignment
     /**
      * Set the board data at a specific board position
      * @param x - The x-value of the board position
@@ -214,6 +216,7 @@ export default class Board {
         }
     }
 
+    // This function should not be needed. All uses should be changed to creating a new instance
     /**
      * Reset the board data to all zeros (calling this function is equivalent to calling the constructor)
      */

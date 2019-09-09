@@ -47,6 +47,7 @@ export default class Piece {
         this.y = y;
     }
 
+    // This function and the one below should be combined into one. It should return the position as an object.
     /**
      * Get the piece's x-value
      * @returns - The x-value
@@ -55,6 +56,7 @@ export default class Piece {
         return this.x;
     }
 
+    // This function and the one above should be combined into one. It should return the position as an object.
     /**
      * Get the piece's y-value
      * @returns - The y-value
@@ -243,6 +245,7 @@ export default class Piece {
         return minLeftDist < 0 || minRightDist < 0;
     }
 
+    // This function and the one below should be turned into one. The direction should be turned into an argument.
     /**
      * Returns the local position of the blocks making up the piece's left side in an array
      * @returns - An array containing the local position of the piece's left side in order
@@ -272,6 +275,7 @@ export default class Piece {
         return leftSide;
     }
 
+    // This function and the one above should be turned into one. The direction should be turned into an argument.
     /**
      * Returns the local position of the blocks making up the piece's right side in an array
      * @returns - An array containing the local position of the piece's right side in order
@@ -301,6 +305,7 @@ export default class Piece {
         return rightSide;
     }
 
+    // This function and the one below should be combined into one. The direction should be turned into a argument.
     /**
      * Returns the minimum distance from this piece's left side to the board's left side
      * @param leftSide - An array containing the position of the blocks in the
@@ -343,6 +348,7 @@ export default class Piece {
         return minDist;
     }
 
+    // This function and the one above should be combined into one. The direction should be turned into a argument.
     /**
      * Returns the minimum distance from this piece's right side to the board's right side
      * @param rightSide - An array containing the position of the blocks in the
