@@ -1,3 +1,3 @@
 # TetrisClone
 
-A clone of Tetris that runs in a web browser
+A clone of the video game Tetris. It runs in the browser on a website.

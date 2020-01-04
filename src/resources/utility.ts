@@ -173,7 +173,7 @@ export const randomRange = (a: number, b: number): number => {
 export const shuffleArray = <T>(array: T[]): T[] => {
     // Create a copy of the original array and an array
     // to hold the result of the shuffling
-    const originalArray: T[] = [...array];
+    const originalArray: T[] = Array.from(array);
     const shuffledArray: T[] = [];
 
     // Loop for the length of the original array
