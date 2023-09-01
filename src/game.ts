@@ -91,7 +91,7 @@ const pieces: PieceType[] = [
 // Set the random piece bag to a shuffled array of five specific piece types.
 // These piece types allow the player to start without an overhang, unlike the S and Z pieces
 let randomPieceBag: PieceType[] = shuffleArray(
-    pieces.filter(value => value !== PieceType.S && value !== PieceType.Z),
+    pieces.filter((value) => value !== PieceType.S && value !== PieceType.Z),
 );
 
 // Take the final piece type out of the random piece bag,
@@ -241,7 +241,7 @@ const draw = (thisFrameTime: DOMHighResTimeStamp): void => {
 // Start the game loop by drawing the first frame
 window.requestAnimationFrame(draw);
 
-document.addEventListener('keydown', event => {
+document.addEventListener('keydown', (event) => {
     // Don't handle events if the key is being held down.
     // The handlers will loop to handle held down keys
     if (event.repeat) {
